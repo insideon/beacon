@@ -71,8 +71,12 @@ export class CodeCollector implements Collector<CodeData> {
   name = "code";
   private options: CodeCollectorOptions;
 
-  constructor(options: CodeCollectorOptions = {}) {
-    this.options = options;
+  constructor(includeOrOptions?: string[] | CodeCollectorOptions, exclude?: string[]) {
+    if (Array.isArray(includeOrOptions)) {
+      this.options = { include: includeOrOptions, exclude };
+    } else {
+      this.options = includeOrOptions ?? {};
+    }
   }
 
   async collect(projectPath: string): Promise<CollectorResult<CodeData>> {
