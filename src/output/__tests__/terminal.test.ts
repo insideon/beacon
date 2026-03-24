@@ -81,20 +81,20 @@ describe("renderTerminal", () => {
     expect(output).toContain("━━━━━━━━━━━━");
   });
 
-  it("contains today's focus header", () => {
+  it("contains today's tasks header", () => {
     const output = stripAnsi(renderTerminal(makeResult(), makeContext()));
-    expect(output).toContain("오늘의 할일");
+    expect(output).toContain("Today's Tasks");
   });
 
   it("shows empty message when no todaysFocus", () => {
     const output = stripAnsi(renderTerminal(makeResult({ todaysFocus: [] }), makeContext()));
-    expect(output).toContain("오늘 할일이 없습니다.");
+    expect(output).toContain("No tasks for today.");
   });
 
   it("shows strategy section with no recommendations", () => {
     const output = stripAnsi(renderTerminal(makeResult(), makeContext()));
-    expect(output).toContain("전략적 제안:");
-    expect(output).toContain("없음");
+    expect(output).toContain("Strategic Suggestions:");
+    expect(output).toContain("None");
   });
 
   it("renders all priority levels with correct emojis", () => {
@@ -143,27 +143,27 @@ describe("renderTerminal", () => {
     ];
     const output = stripAnsi(renderTerminal(makeResult({ recommendations }), makeContext()));
     expect(output).toContain("Long-term plan");
-    expect(output).not.toContain("없음");
+    expect(output).not.toContain(": None");
   });
 
   it("shows last commit relative time", () => {
     const output = stripAnsi(renderTerminal(makeResult(), makeContext()));
-    expect(output).toContain("마지막 커밋:");
+    expect(output).toContain("Last commit:");
     // 2 hours ago commit
-    expect(output).toContain("2시간 전");
+    expect(output).toContain("2h ago");
   });
 
   it("shows weekly commit count", () => {
     const output = stripAnsi(renderTerminal(makeResult(), makeContext()));
-    expect(output).toContain("이번 주 커밋: 1건");
+    expect(output).toContain("This week: 1 commits");
   });
 
   it("shows active branch count", () => {
     const output = stripAnsi(renderTerminal(makeResult(), makeContext()));
-    expect(output).toContain("활성 브랜치: 2개");
+    expect(output).toContain("Active branches: 2");
   });
 
-  it("shows 없음 for last commit when no recent commits", () => {
+  it("shows N/A for last commit when no recent commits", () => {
     const context = makeContext({
       activity: {
         recentCommits: [],
@@ -172,9 +172,9 @@ describe("renderTerminal", () => {
       },
     });
     const output = stripAnsi(renderTerminal(makeResult(), context));
-    expect(output).toContain("마지막 커밋: 없음");
-    expect(output).toContain("이번 주 커밋: 0건");
-    expect(output).toContain("활성 브랜치: 0개");
+    expect(output).toContain("Last commit: N/A");
+    expect(output).toContain("This week: 0 commits");
+    expect(output).toContain("Active branches: 0");
   });
 
   it("does not count old commits in weekly count", () => {
@@ -193,12 +193,12 @@ describe("renderTerminal", () => {
       },
     });
     const output = stripAnsi(renderTerminal(makeResult(), context));
-    expect(output).toContain("이번 주 커밋: 0건");
+    expect(output).toContain("This week: 0 commits");
   });
 });
 
 describe("relative time formatting (via renderTerminal)", () => {
-  it("shows 방금 전 for very recent commits (< 1 min)", () => {
+  it("shows 'just now' for very recent commits (< 1 min)", () => {
     const context = makeContext({
       activity: {
         recentCommits: [
@@ -214,10 +214,10 @@ describe("relative time formatting (via renderTerminal)", () => {
       },
     });
     const output = stripAnsi(renderTerminal(makeResult(), context));
-    expect(output).toContain("방금 전");
+    expect(output).toContain("just now");
   });
 
-  it("shows N분 전 for commits within the last hour", () => {
+  it("shows Nm ago for commits within the last hour", () => {
     const context = makeContext({
       activity: {
         recentCommits: [
@@ -233,10 +233,10 @@ describe("relative time formatting (via renderTerminal)", () => {
       },
     });
     const output = stripAnsi(renderTerminal(makeResult(), context));
-    expect(output).toContain("45분 전");
+    expect(output).toContain("45m ago");
   });
 
-  it("shows N일 전 for commits within the last week", () => {
+  it("shows Nd ago for commits within the last week", () => {
     const context = makeContext({
       activity: {
         recentCommits: [
@@ -252,10 +252,10 @@ describe("relative time formatting (via renderTerminal)", () => {
       },
     });
     const output = stripAnsi(renderTerminal(makeResult(), context));
-    expect(output).toContain("3일 전");
+    expect(output).toContain("3d ago");
   });
 
-  it("shows N주 전 for commits within last month", () => {
+  it("shows Nw ago for commits within last month", () => {
     const context = makeContext({
       activity: {
         recentCommits: [
@@ -271,10 +271,10 @@ describe("relative time formatting (via renderTerminal)", () => {
       },
     });
     const output = stripAnsi(renderTerminal(makeResult(), context));
-    expect(output).toContain("2주 전");
+    expect(output).toContain("2w ago");
   });
 
-  it("shows N개월 전 for old commits", () => {
+  it("shows Nmo ago for old commits", () => {
     const context = makeContext({
       activity: {
         recentCommits: [
@@ -290,6 +290,6 @@ describe("relative time formatting (via renderTerminal)", () => {
       },
     });
     const output = stripAnsi(renderTerminal(makeResult(), context));
-    expect(output).toContain("개월 전");
+    expect(output).toContain("mo ago");
   });
 });
