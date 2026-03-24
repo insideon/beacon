@@ -1,26 +1,10 @@
+import type { Collector } from "../collectors/types.js";
 import type { ProjectContext } from "./types.js";
 
 export class ContextBuilder {
+  constructor(private readonly collectors: Collector[]) {}
   async build(_projectPath: string): Promise<ProjectContext> {
-    return {
-      project: {
-        name: "",
-        purpose: "",
-        techStack: [],
-      },
-      activity: {
-        recentCommits: [],
-        activeBranches: [],
-        uncommittedChanges: [],
-      },
-      health: {
-        todos: [],
-        outdatedDeps: [],
-      },
-      docs: {
-        hasReadme: false,
-        hasChangelog: false,
-      },
-    };
+    // stub - will be implemented in Step 4
+    throw new Error("Not implemented");
   }
 }

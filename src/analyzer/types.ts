@@ -12,6 +12,7 @@ export interface Recommendation {
 export interface AnalysisResult {
   summary: string;
   recommendations: Recommendation[];
+  /** Top 3-5 highest-priority items from recommendations for immediate action today */
   todaysFocus: Recommendation[];
 }
 
