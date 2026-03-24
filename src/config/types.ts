@@ -1,4 +1,16 @@
+export interface LLMConfig {
+  provider: "claude" | "openai" | "ollama";
+  model?: string;
+  apiKey?: string; // supports $ENV_VAR syntax
+}
+
+export interface AnalyzeConfig {
+  include: string[];
+  exclude: string[];
+  maxDepth: number;
+}
+
 export interface BeaconConfig {
-  provider?: string;
-  outputFormat?: "terminal" | "json";
+  llm: LLMConfig;
+  analyze: AnalyzeConfig;
 }
