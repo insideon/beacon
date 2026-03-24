@@ -28,14 +28,14 @@ export function renderTerminal(result: AnalysisResult, context: ProjectContext):
   // Project status section
   const summaryLines = result.summary.split("\n");
   const firstSummaryLine = summaryLines[0] ?? result.summary;
-  lines.push(chalk.bold("📊 프로젝트 상태: ") + firstSummaryLine);
+  lines.push(chalk.bold("📊 Project Status: ") + firstSummaryLine);
 
   // Activity stats
   const recentCommits = context.activity.recentCommits;
   const lastCommit = recentCommits.length > 0 ? recentCommits[0] : null;
   const lastCommitStr = lastCommit
     ? formatRelativeTime(lastCommit.date)
-    : "없음";
+    : "N/A";
 
   // Count commits this week
   const oneWeekAgo = new Date();
@@ -48,7 +48,7 @@ export function renderTerminal(result: AnalysisResult, context: ProjectContext):
 
   lines.push(
     chalk.gray(
-      `   마지막 커밋: ${lastCommitStr} | 이번 주 커밋: ${weeklyCommits}건 | 활성 브랜치: ${activeBranches}개`
+      `   Last commit: ${lastCommitStr} | This week: ${weeklyCommits} commits | Active branches: ${activeBranches}`
     )
   );
   lines.push("");
@@ -56,12 +56,12 @@ export function renderTerminal(result: AnalysisResult, context: ProjectContext):
   lines.push("");
 
   // Today's focus section
-  lines.push(chalk.bold("📋 오늘의 할일 (우선순위순)"));
+  lines.push(chalk.bold("📋 Today's Tasks (by priority)"));
   lines.push("");
 
   const todaysFocus = result.todaysFocus;
   if (todaysFocus.length === 0) {
-    lines.push(chalk.gray("   오늘 할일이 없습니다."));
+    lines.push(chalk.gray("   No tasks for today."));
   } else {
     todaysFocus.forEach((rec, i) => {
       lines.push(renderRecommendation(rec, i + 1));
@@ -79,9 +79,9 @@ export function renderTerminal(result: AnalysisResult, context: ProjectContext):
 
   if (strategyRecs.length > 0) {
     const strategyTitles = strategyRecs.map((r) => r.title).join(", ");
-    lines.push(chalk.bold("💡 전략적 제안: ") + strategyTitles);
+    lines.push(chalk.bold("💡 Strategic Suggestions: ") + strategyTitles);
   } else {
-    lines.push(chalk.bold("💡 전략적 제안: ") + chalk.gray("없음"));
+    lines.push(chalk.bold("💡 Strategic Suggestions: ") + chalk.gray("None"));
   }
 
   return lines.join("\n");
@@ -98,17 +98,17 @@ function formatRelativeTime(date: Date): string {
   const diffMonths = Math.floor(diffDays / 30);
 
   if (diffSeconds < 60) {
-    return "방금 전";
+    return "just now";
   } else if (diffMinutes < 60) {
-    return `${diffMinutes}분 전`;
+    return `${diffMinutes}m ago`;
   } else if (diffHours < 24) {
-    return `${diffHours}시간 전`;
+    return `${diffHours}h ago`;
   } else if (diffDays < 7) {
-    return `${diffDays}일 전`;
+    return `${diffDays}d ago`;
   } else if (diffWeeks < 4) {
-    return `${diffWeeks}주 전`;
+    return `${diffWeeks}w ago`;
   } else {
-    return `${diffMonths}개월 전`;
+    return `${diffMonths}mo ago`;
   }
 }
 
@@ -120,7 +120,7 @@ function renderRecommendation(rec: Recommendation, index: number): string {
   const lines: string[] = [];
   lines.push(` ${index}. ${emoji} ${priorityLabel} ${chalk.bold(rec.title)}`);
   lines.push(chalk.gray(`    → ${rec.description}`));
-  lines.push(chalk.gray(`    예상 작업량: ${rec.effort}`));
+  lines.push(chalk.gray(`    Effort: ${rec.effort}`));
   lines.push("");
 
   return lines.join("\n");

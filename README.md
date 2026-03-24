@@ -63,28 +63,28 @@ beacon todo --json
 ```
 🔍 Beacon - my-awesome-app
 
-📊 프로젝트 상태: Active development, v0.3.2
-   마지막 커밋: 2시간 전 | 이번 주 커밋: 12건 | 활성 브랜치: 3개
+📊 Project Status: Active development, v0.3.2
+   Last commit: 2h ago | This week: 12 commits | Active branches: 3
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📋 오늘의 할일 (우선순위순)
+📋 Today's Tasks (by priority)
 
  1. 🔴 [critical] Fix token expiry validation in auth module
     → src/auth/session.ts:42 — missing expiry check
-    예상 작업량: small
+    Effort: small
 
  2. 🟡 [high] Review and merge PR #23
     → feature/user-profile branch, created 3 days ago
-    예상 작업량: small
+    Effort: small
 
  3. 🔵 [medium] Update lodash to 4.17.21
     → Security patch available
-    예상 작업량: small
+    Effort: small
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-💡 전략적 제안: Test coverage is at 23%.
+💡 Strategic Suggestions: Test coverage is at 23%.
    Consider adding tests for core modules (auth, payment).
 ```
 
