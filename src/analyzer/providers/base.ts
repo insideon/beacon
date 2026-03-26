@@ -1,6 +1,12 @@
 import { ProjectContext } from "../../context/types.js";
-import { AnalysisResult } from "../types.js";
+import { LLMProvider, AnalysisResult } from "../types.js";
 import { z } from "zod";
+import { readFileSync } from "fs";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Zod schema for validating LLM JSON responses
 export const RecommendationSchema = z.object({
@@ -107,4 +113,30 @@ export function parseAnalysisResult(raw: string): AnalysisResult {
   }
 
   return result.data;
+}
+
+/**
+ * Base class for LLM providers. Handles prompt loading, rendering, and response parsing.
+ * Subclasses only need to implement `callApi()` with their specific SDK.
+ */
+export abstract class BaseProvider implements LLMProvider {
+  abstract name: string;
+
+  protected abstract callApi(prompt: string): Promise<string>;
+
+  async analyze(context: ProjectContext, promptType: string): Promise<AnalysisResult> {
+    const promptPath = join(__dirname, "../prompts", `${promptType}.md`);
+    let template: string;
+    try {
+      template = readFileSync(promptPath, "utf-8");
+    } catch (err) {
+      throw new Error(
+        `Failed to load prompt template "${promptType}": ${err instanceof Error ? err.message : String(err)}`
+      );
+    }
+
+    const prompt = renderPrompt(template, context);
+    const raw = await this.callApi(prompt);
+    return parseAnalysisResult(raw);
+  }
 }

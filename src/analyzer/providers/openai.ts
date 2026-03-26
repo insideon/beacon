@@ -1,46 +1,22 @@
 import OpenAI from "openai";
-import { LLMProvider, AnalysisResult } from "../types.js";
-import { ProjectContext } from "../../context/types.js";
-import { renderPrompt, parseAnalysisResult } from "./base.js";
-import { readFileSync } from "fs";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
+import { BaseProvider } from "./base.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-export class OpenAIProvider implements LLMProvider {
+export class OpenAIProvider extends BaseProvider {
   name = "openai";
   private client: OpenAI;
   private model: string;
 
   constructor(apiKey: string, model?: string) {
+    super();
     this.client = new OpenAI({ apiKey });
     this.model = model || "gpt-4o";
   }
 
-  async analyze(context: ProjectContext, promptType: string): Promise<AnalysisResult> {
-    const promptPath = join(__dirname, "../prompts", `${promptType}.md`);
-    let template: string;
-    try {
-      template = readFileSync(promptPath, "utf-8");
-    } catch (err) {
-      throw new Error(
-        `Failed to load prompt template "${promptType}": ${err instanceof Error ? err.message : String(err)}`
-      );
-    }
-
-    const prompt = renderPrompt(template, context);
-
+  protected async callApi(prompt: string): Promise<string> {
     const response = await this.client.chat.completions.create({
       model: this.model,
       max_tokens: 4096,
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
+      messages: [{ role: "user", content: prompt }],
     });
 
     const content = response.choices[0]?.message?.content;
@@ -48,6 +24,6 @@ export class OpenAIProvider implements LLMProvider {
       throw new Error("OpenAI API returned no content in response");
     }
 
-    return parseAnalysisResult(content);
+    return content;
   }
 }
