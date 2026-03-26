@@ -1,4 +1,5 @@
 import { select, password } from "@inquirer/prompts";
+import chalk from "chalk";
 import { loadCredentials, saveCredentials } from "../../auth/credentials.js";
 
 const PROVIDERS = [
@@ -37,8 +38,8 @@ export async function loginCommand(): Promise<void> {
       message: "Select LLM provider:",
       choices: PROVIDERS.map((p) => ({
         name: existingCreds.providers[p.value]
-          ? `${p.name} (connected)`
-          : p.name,
+          ? `${p.name} ${chalk.green("● connected")}`
+          : `${p.name} ${chalk.gray("○ not connected")}`,
         value: p.value,
       })),
     });
@@ -65,7 +66,6 @@ export async function loginCommand(): Promise<void> {
     console.log(`\n✓ Saved! Run 'beacon analyze' to get started.`);
   } catch (error) {
     if (error instanceof Error && error.name === "ExitPromptError") {
-      console.log("\nAborted.");
       process.exit(0);
     }
     throw error;
