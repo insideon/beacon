@@ -4,6 +4,7 @@ import { analyzeCommand } from "./commands/analyze.js";
 import { todoCommand } from "./commands/todo.js";
 import { statusCommand } from "./commands/status.js";
 import { initCommand } from "./commands/init.js";
+import { loginCommand } from "./commands/login.js";
 
 const program = new Command();
 
@@ -44,5 +45,10 @@ program
   .command("init")
   .description("Initialize Beacon configuration")
   .action(initCommand);
+
+program
+  .command("login")
+  .description("Configure LLM provider and API key")
+  .action(loginCommand);
 
 program.parse();
