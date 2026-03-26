@@ -216,6 +216,7 @@ npm run build
 - [ ] Multi-model consensus — Run multiple LLMs, compare results, and synthesize a unified analysis
 - [ ] Custom prompt templates — User-defined analysis prompts
 - [ ] `beacon diff` — Analyze only PR/branch changes
+- [ ] Scheduled reminders — Daily task notifications at your preferred time
 
 ## Contributing
 
