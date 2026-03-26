@@ -33,6 +33,7 @@ runs:
         BEACON_PROVIDER: ${{ inputs.provider }}
         BEACON_API_KEY: ${{ inputs.api-key }}
         BEACON_MODEL: ${{ inputs.model }}
+        NO_COLOR: '1'
       run: |
         # Create temporary config
         CONFIG="{\"llm\":{\"provider\":\"$BEACON_PROVIDER\",\"apiKey\":\"$BEACON_API_KEY\""
@@ -43,7 +44,12 @@ runs:
         echo "$CONFIG" > .beaconrc.json
 
         # Run analysis
-        beacon analyze --json > /tmp/beacon-result.json
+        beacon analyze --json > /tmp/beacon-result.json 2>/tmp/beacon-stderr.log
+
+        # Show stderr in logs for debugging
+        if [ -s /tmp/beacon-stderr.log ]; then
+          cat /tmp/beacon-stderr.log
+        fi
 
         # Clean up config
         rm -f .beaconrc.json
