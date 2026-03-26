@@ -1,0 +1,8 @@
+src/
+docs/
+.claude/
+.beacon/
+.beaconrc.json
+vitest.config.ts
+tsup.config.ts
+tsconfig.json
