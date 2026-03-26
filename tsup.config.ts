@@ -1,4 +1,5 @@
 import { defineConfig } from "tsup";
+import { cpSync } from "fs";
 
 export default defineConfig({
   entry: ["src/cli/index.ts"],
@@ -8,4 +9,7 @@ export default defineConfig({
   clean: true,
   splitting: false,
   sourcemap: true,
+  onSuccess: async () => {
+    cpSync("src/analyzer/prompts", "dist/prompts", { recursive: true });
+  },
 });

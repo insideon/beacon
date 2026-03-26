@@ -126,7 +126,16 @@ export abstract class BaseProvider implements LLMProvider {
   protected abstract callApi(prompt: string): Promise<string>;
 
   async analyze(context: ProjectContext, promptType: string): Promise<AnalysisResult> {
-    const promptPath = join(__dirname, "../prompts", `${promptType}.md`);
+    // In bundled dist: __dirname/prompts/, in source: __dirname/../prompts/
+    const bundledPath = join(__dirname, "prompts", `${promptType}.md`);
+    const sourcePath = join(__dirname, "../prompts", `${promptType}.md`);
+    let promptPath: string;
+    try {
+      readFileSync(bundledPath);
+      promptPath = bundledPath;
+    } catch {
+      promptPath = sourcePath;
+    }
     let template: string;
     try {
       template = readFileSync(promptPath, "utf-8");
