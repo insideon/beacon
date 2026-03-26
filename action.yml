@@ -54,6 +54,15 @@ runs:
         # Clean up config
         rm -f .beaconrc.json
 
+    - name: Debug Result
+      shell: bash
+      run: |
+        echo "=== beacon-result.json (first 500 chars) ==="
+        head -c 500 /tmp/beacon-result.json || echo "(file not found)"
+        echo ""
+        echo "=== beacon-stderr.log ==="
+        cat /tmp/beacon-stderr.log 2>/dev/null || echo "(no stderr)"
+
     - name: Format Comment
       shell: bash
       run: |
