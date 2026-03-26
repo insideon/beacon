@@ -18,8 +18,10 @@ Beacon is an AI-powered CLI tool that analyzes your codebase and tells you what 
 - **Prioritized Todo Lists** — AI-generated tasks ranked by urgency and impact
 - **Strategic Recommendations** — High-level direction for your project's growth
 - **Multiple Data Sources** — Git history, code quality, dependencies, documentation
-- **Pluggable LLM Backend** — Claude, OpenAI, Google Gemini, GitHub Copilot, OpenRouter
+- **5 LLM Providers** — Claude, OpenAI, Google Gemini, GitHub Copilot, OpenRouter
 - **Easy Setup** — `beacon login` for interactive API key configuration
+- **Result Caching** — Caches results per git commit, skips redundant LLM calls
+- **GitHub Action** — Automatic PR analysis with comment posting
 - **JSON Output** — Machine-readable output for CI/CD integration
 
 ## Quick Start
@@ -28,11 +30,26 @@ Beacon is an AI-powered CLI tool that analyzes your codebase and tells you what 
 # Install globally
 npm install -g beacon-ai
 
-# Set up your LLM provider
+# Set up your LLM provider (opens browser for API key)
 beacon login
 
 # Analyze your project
 beacon
+```
+
+`beacon login` will guide you through provider selection:
+
+```
+? Select LLM provider:
+  > Claude (Anthropic)
+    OpenAI
+    Google (Gemini)
+    GitHub Copilot
+    OpenRouter
+
+Opening API key page in browser...
+? Paste your API key: ****
+✓ Saved! Run 'beacon analyze' to get started.
 ```
 
 ## Usage
@@ -54,48 +71,52 @@ beacon status
 # JSON output for automation
 beacon analyze --json
 beacon todo --json
+
+# Debugging and options
+beacon analyze --verbose    # Show detailed progress
+beacon analyze --no-cache   # Force fresh analysis (skip cache)
 ```
 
 ### Example Output
 
 ```
-🔍 Beacon - my-awesome-app
+🔍 Beacon - my-project
 
-📊 Project Status: Active development, v0.3.2
-   Last commit: 2h ago | This week: 12 commits | Active branches: 3
+📊 Project Status: Active TypeScript project with 45 files across 8 modules.
+   Recent activity shows focus on API endpoints and auth improvements.
+   3 TODO items and 1 FIXME found in source code.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📋 Today's Tasks (by priority)
 
- 1. 🔴 [critical] Fix token expiry validation in auth module
-    → src/auth/session.ts:42 — missing expiry check
+ 1. 🟠 [high] Add input validation to API endpoints
+    → Missing validation on user-facing routes
     Effort: small
 
- 2. 🟡 [high] Review and merge PR #23
-    → feature/user-profile branch, created 3 days ago
+ 2. 🟠 [high] Resolve FIXME in payment processing
+    → Edge case in refund calculation
     Effort: small
 
- 3. 🔵 [medium] Update lodash to 4.17.21
-    → Security patch available
-    Effort: small
+ 3. 🟡 [medium] Add error handling for external API calls
+    → Network failures not gracefully handled
+    Effort: medium
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-💡 Strategic Suggestions: Test coverage is at 23%.
-   Consider adding tests for core modules (auth, payment).
+💡 Strategic Suggestions: Consider adding integration tests
+   for critical paths before scaling the API layer.
 ```
 
 ## Configuration
 
-Beacon uses a `.beaconrc.json` file in your project root:
+Beacon stores API keys securely in `~/.beacon/credentials.json` via `beacon login`. For project-specific settings, create a `.beaconrc.json`:
 
 ```json
 {
   "llm": {
     "provider": "claude",
-    "model": "claude-sonnet-4-6",
-    "apiKey": "$ANTHROPIC_API_KEY"
+    "model": "claude-sonnet-4-6"
   },
   "analyze": {
     "include": ["src/**", "lib/**"],
@@ -105,11 +126,15 @@ Beacon uses a `.beaconrc.json` file in your project root:
 }
 ```
 
-Run `beacon init` to generate this file with sensible defaults.
+Run `beacon init` to generate this file with defaults.
+
+### Config Resolution Order
+
+1. `.beaconrc.json` in project root (highest priority)
+2. `~/.beacon/credentials.json` (set by `beacon login`)
+3. Environment variables (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, etc.)
 
 ## Architecture
-
-Beacon uses a pipeline architecture:
 
 ```
 Collectors (parallel) → Context Builder → LLM Analyzer → Presenter
@@ -123,27 +148,8 @@ Collectors (parallel) → Context Builder → LLM Analyzer → Presenter
 | **DocsCollector** | README, CHANGELOG, LICENSE presence and content |
 | **ContextBuilder** | Assembles collector data into structured context |
 | **LLM Analyzer** | Sends context to LLM, validates structured response |
+| **Cache** | Stores results by git commit hash in `.beacon/cache/` |
 | **Presenter** | Formats output for terminal or JSON |
-
-## Development
-
-```bash
-# Clone the repository
-git clone https://github.com/insideon/beacon.git
-cd beacon
-
-# Install dependencies
-npm install
-
-# Run tests
-npm test
-
-# Type check
-npm run typecheck
-
-# Build
-npm run build
-```
 
 ## Supported Providers
 
@@ -186,13 +192,25 @@ jobs:
 | `api-key` | yes | — | API key for the provider |
 | `model` | no | provider default | LLM model override |
 
-## Roadmap
+## Development
 
-- [x] OpenAI provider
-- [x] Multi-provider support (Google, Copilot, OpenRouter)
-- [x] `beacon login` command
-- [x] GitHub Action integration
-- [x] Analysis result caching
+```bash
+# Clone the repository
+git clone https://github.com/insideon/beacon.git
+cd beacon
+
+# Install dependencies
+npm install
+
+# Run tests
+npm test
+
+# Type check
+npm run typecheck
+
+# Build
+npm run build
+```
 
 ## Contributing
 
