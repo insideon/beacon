@@ -5,6 +5,7 @@ import { renderTerminal } from "../../output/terminal.js";
 import { renderJson } from "../../output/json.js";
 import { getCache, setCache } from "../../cache/index.js";
 import { execSync } from "child_process";
+import { createSpinner } from "../spinner.js";
 import type { AnalysisResult } from "../../analyzer/types.js";
 
 function getHeadCommit(): string | null {
@@ -41,13 +42,13 @@ export async function todoCommand(options: {
       process.exit(1);
     }
 
-    const status = (msg: string) => { if (!isJson) process.stderr.write(`${msg}\n`); };
+    const spinner = !isJson ? createSpinner() : null;
 
-    status("⏳ Collecting project data...");
+    spinner?.start("Collecting project data...");
     log("Collecting project data...");
     const builder = new ContextBuilder(config);
     const context = await builder.build(projectPath, verbose);
-    status("✔ Project data collected");
+    spinner?.succeed("Project data collected");
 
     const commitHash = getHeadCommit();
 
@@ -76,12 +77,12 @@ export async function todoCommand(options: {
 
     const provider = createProvider(config.llm.provider, apiKey, config.llm.model);
 
-    status("⏳ Analyzing with AI...");
+    spinner?.start("Analyzing with AI...");
     log("Calling LLM API...");
     const llmStart = Date.now();
     const result = await provider.analyze(context, "todo");
     const llmElapsed = ((Date.now() - llmStart) / 1000).toFixed(1);
-    status(`✔ Analysis complete (${llmElapsed}s)`);
+    spinner?.succeed(`Analysis complete (${llmElapsed}s)`);
     log(`LLM response received (${llmElapsed}s)`);
 
     // Save to cache
