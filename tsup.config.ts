@@ -10,7 +10,7 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   banner: {
-    js: 'process.on("SIGINT", () => { try { process.stderr.write("\\n"); } catch {} process.kill(process.pid, "SIGKILL"); });',
+    js: 'process.on("SIGINT", () => { try { process.stderr.write("\\n"); } catch {} process.exit(0); });',
   },
   onSuccess: async () => {
     cpSync("src/analyzer/prompts", "dist/prompts", { recursive: true });
