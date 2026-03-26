@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+process.on("SIGINT", () => process.exit(0));
+
 import { Command } from "commander";
 import { analyzeCommand } from "./commands/analyze.js";
 import { todoCommand } from "./commands/todo.js";
