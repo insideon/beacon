@@ -1,5 +1,4 @@
 import { select, password } from "@inquirer/prompts";
-import open from "open";
 import { loadCredentials, saveCredentials } from "../../auth/credentials.js";
 
 const PROVIDERS = [
@@ -38,8 +37,7 @@ export async function loginCommand(): Promise<void> {
 
   const providerInfo = PROVIDERS.find((p) => p.value === provider)!;
 
-  console.log(`\nOpening ${providerInfo.keyPage} ...`);
-  await open(providerInfo.keyPage);
+  console.log(`\nGet your API key here: ${providerInfo.keyPage}`);
 
   const apiKey = await password({
     message: "Paste your API key:",
