@@ -149,7 +149,7 @@ npm run build
 
 ## Roadmap
 
-- [ ] OpenAI provider
+- [x] OpenAI provider
 - [ ] GitHub Action integration
 - [ ] Analysis result caching
 
