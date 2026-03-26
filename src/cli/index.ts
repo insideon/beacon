@@ -10,18 +10,18 @@ const program = new Command();
 
 program
   .name("beacon")
-  .description("Your codebase has a purpose. Beacon finds it.")
-  .version("1.0.0")
-  .option("--json", "Output as JSON")
-  .option("--verbose", "Enable verbose logging to stderr")
-  .option("--no-cache", "Skip analysis cache");
+  .description("AI-powered CLI that analyzes your codebase and tells you what to work on next.")
+  .version("1.0.1")
+  .option("--json", "Output results as JSON")
+  .option("--verbose", "Show detailed progress logs")
+  .option("--no-cache", "Skip cache and force fresh analysis");
 
 function globalOpts() {
   const { json, verbose, cache } = program.opts();
   return { json: json ?? false, verbose: verbose ?? false, noCache: !cache };
 }
 
-// Default action (no subcommand) = analyze + todo
+// Default action (no subcommand) = analyze
 program
   .action(async () => {
     await analyzeCommand({ ...globalOpts(), withTodo: true });
@@ -29,34 +29,46 @@ program
 
 program
   .command("analyze")
-  .description("Analyze the project")
+  .description("Run full project analysis with AI recommendations")
   .action(() => {
     return analyzeCommand(globalOpts());
   });
 
 program
   .command("todo")
-  .description("Show prioritized task list")
-  .option("--today", "Focus on today's tasks only")
+  .description("Get a prioritized task list for your project")
+  .option("--today", "Show only today's top tasks")
   .action((options) => {
     return todoCommand({ ...globalOpts(), today: options.today });
   });
 
 program
   .command("status")
-  .description("Show project status summary")
+  .description("Quick project overview without AI (no API key needed)")
   .action(() => {
     return statusCommand(globalOpts());
   });
 
 program
   .command("init")
-  .description("Initialize Beacon configuration")
+  .description("Create a .beaconrc.json config file with defaults")
   .action(initCommand);
 
 program
   .command("login")
-  .description("Configure LLM provider and API key")
+  .description("Set up your LLM provider and API key")
   .action(loginCommand);
+
+program
+  .command("help")
+  .description("Show help information")
+  .action(() => {
+    program.help();
+  });
+
+program.on("command:*", () => {
+  console.error(`Unknown command: ${program.args.join(" ")}\n`);
+  program.help();
+});
 
 program.parse();

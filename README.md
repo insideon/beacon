@@ -47,35 +47,34 @@ beacon
     GitHub Copilot
     OpenRouter
 
-Opening API key page in browser...
+Get your API key here: https://console.anthropic.com/settings/keys
 ? Paste your API key: ****
 ✓ Saved! Run 'beacon analyze' to get started.
 ```
 
 ## Usage
 
-```bash
-# Full analysis with today's tasks (default)
-beacon
+### Commands
 
-# Analyze project health
-beacon analyze
+| Command | Description |
+|---------|-------------|
+| `beacon` | Run full analysis (default) |
+| `beacon analyze` | Run project analysis with AI recommendations |
+| `beacon todo` | Get a prioritized task list |
+| `beacon todo --today` | Show only today's top tasks |
+| `beacon status` | Quick project overview without AI (no API key needed) |
+| `beacon init` | Create a `.beaconrc.json` config file |
+| `beacon login` | Set up your LLM provider and API key |
 
-# Get prioritized todo list
-beacon todo
-beacon todo --today    # Focus on today's tasks
+### Global Options
 
-# Quick status without LLM (no API key needed)
-beacon status
-
-# JSON output for automation
-beacon analyze --json
-beacon todo --json
-
-# Debugging and options
-beacon analyze --verbose    # Show detailed progress
-beacon analyze --no-cache   # Force fresh analysis (skip cache)
-```
+| Option | Description |
+|--------|-------------|
+| `--json` | Output results as JSON |
+| `--verbose` | Show detailed progress logs |
+| `--no-cache` | Skip cache and force fresh analysis |
+| `-V, --version` | Show version number |
+| `-h, --help` | Show help information |
 
 ### Example Output
 
