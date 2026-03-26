@@ -12,43 +12,42 @@ program
   .name("beacon")
   .description("Your codebase has a purpose. Beacon finds it.")
   .version("0.1.0")
+  .option("--json", "Output as JSON")
   .option("--verbose", "Enable verbose logging to stderr")
   .option("--no-cache", "Skip analysis cache");
 
+function globalOpts() {
+  const { json, verbose, cache } = program.opts();
+  return { json: json ?? false, verbose: verbose ?? false, noCache: !cache };
+}
+
 // Default action (no subcommand) = analyze + todo
 program
-  .option("--json", "Output as JSON")
-  .option("--no-color", "Disable colored output")
-  .action(async (options) => {
-    // Run analyze+todo as default
-    const { verbose, cache } = program.opts();
-    await analyzeCommand({ ...options, withTodo: true, verbose: verbose ?? false, noCache: !cache });
+  .action(async () => {
+    await analyzeCommand({ ...globalOpts(), withTodo: true });
   });
 
 program
   .command("analyze")
   .description("Analyze the project")
-  .option("--json", "Output as JSON")
-  .action((options) => {
-    const { verbose, cache } = program.opts();
-    return analyzeCommand({ ...options, verbose: verbose ?? false, noCache: !cache });
+  .action(() => {
+    return analyzeCommand(globalOpts());
   });
 
 program
   .command("todo")
   .description("Show prioritized task list")
   .option("--today", "Focus on today's tasks only")
-  .option("--json", "Output as JSON")
   .action((options) => {
-    const { verbose, cache } = program.opts();
-    return todoCommand({ ...options, verbose: verbose ?? false, noCache: !cache });
+    return todoCommand({ ...globalOpts(), today: options.today });
   });
 
 program
   .command("status")
   .description("Show project status summary")
-  .option("--json", "Output as JSON")
-  .action(statusCommand);
+  .action(() => {
+    return statusCommand(globalOpts());
+  });
 
 program
   .command("init")
