@@ -1,0 +1,16 @@
+name: Beacon Analysis
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: insideon/beacon@v1
+        with:
+          provider: claude
+          api-key: ${{ secrets.ANTHROPIC_API_KEY }}
