@@ -1,5 +1,6 @@
 import { LLMProvider } from "./types.js";
 import { ClaudeProvider } from "./providers/claude.js";
+import { OpenAIProvider } from "./providers/openai.js";
 import { BeaconConfig } from "../config/types.js";
 
 export function createProvider(config: BeaconConfig): LLMProvider {
@@ -13,7 +14,11 @@ export function createProvider(config: BeaconConfig): LLMProvider {
         );
       return new ClaudeProvider(apiKey, model);
     case "openai":
-      throw new Error("OpenAI provider not yet implemented");
+      if (!apiKey)
+        throw new Error(
+          "API key required for OpenAI. Set llm.apiKey in .beaconrc.json or $OPENAI_API_KEY"
+        );
+      return new OpenAIProvider(apiKey, model);
     default:
       throw new Error(`Unknown LLM provider: ${provider}`);
   }

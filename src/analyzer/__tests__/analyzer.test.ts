@@ -32,6 +32,21 @@ vi.mock("@anthropic-ai/sdk", () => {
   };
 });
 
+// Mock the OpenAI SDK before importing OpenAIProvider
+vi.mock("openai", () => {
+  const mockCreate = vi.fn();
+  return {
+    default: vi.fn().mockImplementation(() => ({
+      chat: {
+        completions: {
+          create: mockCreate,
+        },
+      },
+    })),
+    __mockCreate: mockCreate,
+  };
+});
+
 describe("createProvider", () => {
   it("returns a ClaudeProvider when provider is 'claude'", () => {
     const provider = createProvider(makeConfig({ provider: "claude" }));
@@ -50,10 +65,21 @@ describe("createProvider", () => {
     ).toThrow("API key required for Claude");
   });
 
-  it("throws for 'openai' provider (not yet implemented)", () => {
+  it("returns an OpenAIProvider when provider is 'openai'", () => {
+    const provider = createProvider(makeConfig({ provider: "openai", apiKey: "test-key" }));
+    expect(provider.name).toBe("openai");
+  });
+
+  it("throws when provider is 'openai' and apiKey is missing", () => {
     expect(() =>
-      createProvider(makeConfig({ provider: "openai", apiKey: "key" }))
-    ).toThrow("OpenAI provider not yet implemented");
+      createProvider(makeConfig({ provider: "openai", apiKey: undefined }))
+    ).toThrow("API key required for OpenAI");
+  });
+
+  it("throws when provider is 'openai' and apiKey is empty string", () => {
+    expect(() =>
+      createProvider(makeConfig({ provider: "openai", apiKey: "" }))
+    ).toThrow("API key required for OpenAI");
   });
 
   it("throws for unknown provider", () => {
@@ -269,5 +295,167 @@ describe("ClaudeProvider", () => {
     await expect(
       provider.analyze(makeProjectContext(), "analyze")
     ).rejects.toThrow("API rate limit exceeded");
+  });
+});
+
+describe("OpenAIProvider", () => {
+  const mockValidResponse = {
+    summary: "Project is in good health.",
+    recommendations: [
+      {
+        title: "Fix outdated dep",
+        description: "Update the outdated package",
+        priority: "high" as const,
+        category: "ops" as const,
+        effort: "small" as const,
+        reasoning: "Security risk",
+      },
+    ],
+    todaysFocus: [
+      {
+        title: "Fix outdated dep",
+        description: "Update the outdated package",
+        priority: "high" as const,
+        category: "ops" as const,
+        effort: "small" as const,
+        reasoning: "Quick win today",
+      },
+    ],
+  };
+
+  const makeProjectContext = () => ({
+    project: {
+      name: "beacon",
+      purpose: "AI project analyzer",
+      techStack: ["TypeScript"],
+    },
+    activity: {
+      recentCommits: [],
+      activeBranches: [],
+      uncommittedChanges: [],
+    },
+    health: {
+      todos: [],
+      outdatedDeps: [],
+    },
+    docs: {
+      hasReadme: true,
+      hasChangelog: false,
+    },
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("calls OpenAI API and returns parsed AnalysisResult", async () => {
+    const openaiMod = await import("openai");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mockCreate = (openaiMod as any).__mockCreate as ReturnType<typeof vi.fn>;
+
+    mockCreate.mockResolvedValueOnce({
+      choices: [
+        {
+          message: {
+            content: JSON.stringify(mockValidResponse),
+          },
+        },
+      ],
+    });
+
+    const { OpenAIProvider } = await import("../providers/openai.js");
+    const provider = new OpenAIProvider("test-key", "gpt-4o");
+    const result = await provider.analyze(makeProjectContext(), "analyze");
+
+    expect(result.summary).toBe("Project is in good health.");
+    expect(result.recommendations).toHaveLength(1);
+    expect(result.recommendations[0].priority).toBe("high");
+    expect(result.todaysFocus).toHaveLength(1);
+  });
+
+  it("passes the correct model to the OpenAI API", async () => {
+    const openaiMod = await import("openai");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mockCreate = (openaiMod as any).__mockCreate as ReturnType<typeof vi.fn>;
+
+    mockCreate.mockResolvedValueOnce({
+      choices: [
+        {
+          message: {
+            content: JSON.stringify(mockValidResponse),
+          },
+        },
+      ],
+    });
+
+    const { OpenAIProvider } = await import("../providers/openai.js");
+    const provider = new OpenAIProvider("test-key", "gpt-4.1");
+    await provider.analyze(makeProjectContext(), "analyze");
+
+    expect(mockCreate).toHaveBeenCalledWith(
+      expect.objectContaining({ model: "gpt-4.1" })
+    );
+  });
+
+  it("uses default model 'gpt-4o' when model not specified", async () => {
+    const openaiMod = await import("openai");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mockCreate = (openaiMod as any).__mockCreate as ReturnType<typeof vi.fn>;
+
+    mockCreate.mockResolvedValueOnce({
+      choices: [
+        {
+          message: {
+            content: JSON.stringify(mockValidResponse),
+          },
+        },
+      ],
+    });
+
+    const { OpenAIProvider } = await import("../providers/openai.js");
+    const provider = new OpenAIProvider("test-key");
+    await provider.analyze(makeProjectContext(), "todo");
+
+    expect(mockCreate).toHaveBeenCalledWith(
+      expect.objectContaining({ model: "gpt-4o" })
+    );
+  });
+
+  it("throws when API returns no content", async () => {
+    const openaiMod = await import("openai");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mockCreate = (openaiMod as any).__mockCreate as ReturnType<typeof vi.fn>;
+
+    mockCreate.mockResolvedValueOnce({
+      choices: [
+        {
+          message: {
+            content: null,
+          },
+        },
+      ],
+    });
+
+    const { OpenAIProvider } = await import("../providers/openai.js");
+    const provider = new OpenAIProvider("test-key");
+
+    await expect(
+      provider.analyze(makeProjectContext(), "analyze")
+    ).rejects.toThrow("OpenAI API returned no content in response");
+  });
+
+  it("propagates API errors", async () => {
+    const openaiMod = await import("openai");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const mockCreate = (openaiMod as any).__mockCreate as ReturnType<typeof vi.fn>;
+
+    mockCreate.mockRejectedValueOnce(new Error("Rate limit exceeded"));
+
+    const { OpenAIProvider } = await import("../providers/openai.js");
+    const provider = new OpenAIProvider("test-key");
+
+    await expect(
+      provider.analyze(makeProjectContext(), "analyze")
+    ).rejects.toThrow("Rate limit exceeded");
   });
 });
