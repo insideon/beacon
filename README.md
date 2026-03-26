@@ -155,12 +155,43 @@ npm run build
 | GitHub Copilot | gpt-4o |
 | OpenRouter | anthropic/claude-sonnet-4 |
 
+## GitHub Action
+
+Automatically analyze your codebase on every pull request:
+
+```yaml
+name: Beacon Analysis
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: insideon/beacon@v1
+        with:
+          provider: claude
+          api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+```
+
+### Inputs
+
+| Input | Required | Default | Description |
+|-------|----------|---------|-------------|
+| `provider` | no | `claude` | LLM provider name |
+| `api-key` | yes | — | API key for the provider |
+| `model` | no | provider default | LLM model override |
+
 ## Roadmap
 
 - [x] OpenAI provider
 - [x] Multi-provider support (Google, Copilot, OpenRouter)
 - [x] `beacon login` command
-- [ ] GitHub Action integration
+- [x] GitHub Action integration
 - [ ] Analysis result caching
 
 ## Contributing
