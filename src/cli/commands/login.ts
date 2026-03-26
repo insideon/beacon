@@ -30,29 +30,44 @@ const PROVIDERS = [
 ];
 
 export async function loginCommand(): Promise<void> {
-  const provider = await select({
-    message: "Select LLM provider:",
-    choices: PROVIDERS.map((p) => ({ name: p.name, value: p.value })),
-  });
+  try {
+    const existingCreds = await loadCredentials();
 
-  const providerInfo = PROVIDERS.find((p) => p.value === provider)!;
+    const provider = await select({
+      message: "Select LLM provider:",
+      choices: PROVIDERS.map((p) => ({
+        name: existingCreds.providers[p.value]
+          ? `${p.name} (connected)`
+          : p.name,
+        value: p.value,
+      })),
+    });
 
-  console.log(`\nGet your API key here: ${providerInfo.keyPage}`);
+    const providerInfo = PROVIDERS.find((p) => p.value === provider)!;
 
-  const apiKey = await password({
-    message: "Paste your API key:",
-    mask: "*",
-  });
+    console.log(`\nGet your API key here: ${providerInfo.keyPage}`);
 
-  if (!apiKey) {
-    console.error("No API key provided. Aborted.");
-    process.exit(1);
+    const apiKey = await password({
+      message: "Paste your API key:",
+      mask: "*",
+    });
+
+    if (!apiKey) {
+      console.error("No API key provided. Aborted.");
+      process.exit(1);
+    }
+
+    const creds = await loadCredentials();
+    creds.activeProvider = provider;
+    creds.providers[provider] = { apiKey };
+    await saveCredentials(undefined, creds);
+
+    console.log(`\n✓ Saved! Run 'beacon analyze' to get started.`);
+  } catch (error) {
+    if (error instanceof Error && error.name === "ExitPromptError") {
+      console.log("\nAborted.");
+      process.exit(0);
+    }
+    throw error;
   }
-
-  const creds = await loadCredentials();
-  creds.activeProvider = provider;
-  creds.providers[provider] = { apiKey };
-  await saveCredentials(undefined, creds);
-
-  console.log(`\n✓ Saved! Run 'beacon analyze' to get started.`);
 }
