@@ -18,7 +18,7 @@ Beacon is an AI-powered CLI tool that analyzes your codebase and tells you what 
 - **Prioritized Todo Lists** — AI-generated tasks ranked by urgency and impact
 - **Strategic Recommendations** — High-level direction for your project's growth
 - **Multiple Data Sources** — Git history, code quality, dependencies, documentation
-- **Pluggable LLM Backend** — Claude (default), with OpenAI and Ollama support planned
+- **Pluggable LLM Backend** — Claude (default), with OpenAI support planned
 - **JSON Output** — Machine-readable output for CI/CD integration
 
 ## Quick Start
@@ -150,11 +150,8 @@ npm run build
 ## Roadmap
 
 - [ ] OpenAI provider
-- [ ] Ollama provider (local LLM)
 - [ ] GitHub Action integration
-- [ ] Web dashboard
 - [ ] Analysis result caching
-- [ ] Custom prompt templates
 
 ## Contributing
 

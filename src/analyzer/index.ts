@@ -14,8 +14,6 @@ export function createProvider(config: BeaconConfig): LLMProvider {
       return new ClaudeProvider(apiKey, model);
     case "openai":
       throw new Error("OpenAI provider not yet implemented");
-    case "ollama":
-      throw new Error("Ollama provider not yet implemented");
     default:
       throw new Error(`Unknown LLM provider: ${provider}`);
   }

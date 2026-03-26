@@ -56,12 +56,6 @@ describe("createProvider", () => {
     ).toThrow("OpenAI provider not yet implemented");
   });
 
-  it("throws for 'ollama' provider (not yet implemented)", () => {
-    expect(() =>
-      createProvider(makeConfig({ provider: "ollama" }))
-    ).toThrow("Ollama provider not yet implemented");
-  });
-
   it("throws for unknown provider", () => {
     // Force an unknown provider via type assertion
     expect(() =>

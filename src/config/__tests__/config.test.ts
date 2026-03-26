@@ -83,8 +83,8 @@ describe("loadConfig", () => {
     it("merges partial config with defaults (llm only)", async () => {
       const configContent = {
         llm: {
-          provider: "ollama",
-          model: "llama3",
+          provider: "openai",
+          model: "gpt-4o",
         },
       };
       await writeFile(
@@ -94,8 +94,8 @@ describe("loadConfig", () => {
 
       const config = await loadConfig(configDir);
 
-      expect(config.llm.provider).toBe("ollama");
-      expect(config.llm.model).toBe("llama3");
+      expect(config.llm.provider).toBe("openai");
+      expect(config.llm.model).toBe("gpt-4o");
       // analyze should be default
       expect(config.analyze.include).toEqual(["**/*"]);
       expect(config.analyze.maxDepth).toBe(5);

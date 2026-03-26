@@ -1,5 +1,5 @@
 export interface LLMConfig {
-  provider: "claude" | "openai" | "ollama";
+  provider: "claude" | "openai";
   model?: string;
   apiKey?: string; // supports $ENV_VAR syntax
 }
