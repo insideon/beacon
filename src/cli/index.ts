@@ -2,6 +2,13 @@
 process.on("SIGINT", () => process.exit(0));
 
 import { Command } from "commander";
+import { readFileSync } from "fs";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const pkg = JSON.parse(readFileSync(join(__dirname, "../package.json"), "utf-8"));
 import { analyzeCommand } from "./commands/analyze.js";
 import { todoCommand } from "./commands/todo.js";
 import { statusCommand } from "./commands/status.js";
@@ -13,7 +20,7 @@ const program = new Command();
 program
   .name("beacon")
   .description("AI-powered CLI that analyzes your codebase and tells you what to work on next.")
-  .version("1.0.1")
+  .version(pkg.version)
   .option("--json", "Output results as JSON")
   .option("--verbose", "Show detailed progress logs")
   .option("--no-cache", "Skip cache and force fresh analysis");
