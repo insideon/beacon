@@ -217,6 +217,7 @@ npm run build
 - [ ] Custom prompt templates — User-defined analysis prompts
 - [ ] `beacon diff` — Analyze only PR/branch changes
 - [ ] Scheduled reminders — Daily task notifications at your preferred time
+- [ ] Auto-pilot mode — Automatically dispatch tasks to AI coding agents for execution
 
 ## Contributing
 
