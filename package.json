@@ -4,7 +4,7 @@
   "description": "AI-powered project health analyzer CLI",
   "type": "module",
   "bin": {
-    "beacon": "dist/cli/index.js"
+    "beacon": "dist/index.js"
   },
   "scripts": {
     "build": "tsup",
