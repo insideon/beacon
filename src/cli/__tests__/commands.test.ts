@@ -54,7 +54,7 @@ describe("initCommand", () => {
 
     const llm = config["llm"] as Record<string, unknown>;
     expect(llm["provider"]).toBe("claude");
-    expect(llm["apiKey"]).toBe("$ANTHROPIC_API_KEY");
+    expect(llm["model"]).toBe("claude-sonnet-4-6");
   });
 
   it("prints a message when config already exists", async () => {

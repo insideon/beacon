@@ -18,7 +18,8 @@ Beacon is an AI-powered CLI tool that analyzes your codebase and tells you what 
 - **Prioritized Todo Lists** — AI-generated tasks ranked by urgency and impact
 - **Strategic Recommendations** — High-level direction for your project's growth
 - **Multiple Data Sources** — Git history, code quality, dependencies, documentation
-- **Pluggable LLM Backend** — Claude (default), with OpenAI support planned
+- **Pluggable LLM Backend** — Claude, OpenAI, Google Gemini, GitHub Copilot, OpenRouter
+- **Easy Setup** — `beacon login` for interactive API key configuration
 - **JSON Output** — Machine-readable output for CI/CD integration
 
 ## Quick Start
@@ -27,11 +28,8 @@ Beacon is an AI-powered CLI tool that analyzes your codebase and tells you what 
 # Install globally
 npm install -g beacon-ai
 
-# Initialize configuration
-beacon init
-
-# Set your API key
-export ANTHROPIC_API_KEY=your-key-here
+# Set up your LLM provider
+beacon login
 
 # Analyze your project
 beacon
@@ -147,9 +145,21 @@ npm run typecheck
 npm run build
 ```
 
+## Supported Providers
+
+| Provider | Default Model |
+|----------|--------------|
+| Claude (Anthropic) | claude-sonnet-4-6 |
+| OpenAI | gpt-4o |
+| Google Gemini | gemini-2.5-flash |
+| GitHub Copilot | gpt-4o |
+| OpenRouter | anthropic/claude-sonnet-4 |
+
 ## Roadmap
 
 - [x] OpenAI provider
+- [x] Multi-provider support (Google, Copilot, OpenRouter)
+- [x] `beacon login` command
 - [ ] GitHub Action integration
 - [ ] Analysis result caching
 
