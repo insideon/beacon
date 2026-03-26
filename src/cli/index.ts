@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-process.on("SIGINT", () => process.exit(0));
-
 import { Command } from "commander";
 import { readFileSync } from "fs";
 import { join, dirname } from "path";

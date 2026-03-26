@@ -9,6 +9,9 @@ export default defineConfig({
   clean: true,
   splitting: false,
   sourcemap: true,
+  banner: {
+    js: 'process.on("SIGINT", () => process.exit(0));',
+  },
   onSuccess: async () => {
     cpSync("src/analyzer/prompts", "dist/prompts", { recursive: true });
   },
