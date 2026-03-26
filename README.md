@@ -211,6 +211,12 @@ npm run typecheck
 npm run build
 ```
 
+## Roadmap
+
+- [ ] Multi-model consensus — Run multiple LLMs, compare results, and synthesize a unified analysis
+- [ ] Custom prompt templates — User-defined analysis prompts
+- [ ] `beacon diff` — Analyze only PR/branch changes
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
