@@ -4,7 +4,7 @@
   <p align="center">
     <a href="https://github.com/insideon/beacon/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
     <a href="https://www.npmjs.com/package/beacon-ai"><img src="https://img.shields.io/npm/v/beacon-ai.svg" alt="npm version"></a>
-    <a href="https://github.com/insideon/beacon/actions"><img src="https://img.shields.io/github/actions/workflow/status/insideon/beacon/beacon.yml?branch=main" alt="CI"></a>
+    <a href="https://github.com/insideon/beacon/actions"><img src="https://img.shields.io/github/actions/workflow/status/insideon/beacon/ci.yml?branch=main" alt="CI"></a>
   </p>
 </p>
 
