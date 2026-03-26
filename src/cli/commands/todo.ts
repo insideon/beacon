@@ -42,7 +42,15 @@ export async function todoCommand(options: {
     }
   } catch (error) {
     if (error instanceof Error) {
-      console.error(`Error: ${error.message}`);
+      const msg = error.message;
+      console.error(`Error: ${msg}`);
+      if (/api|key|auth/i.test(msg)) {
+        console.error("Hint: Run 'beacon login' to set up or refresh your API key.");
+      } else if (/network|ECONNREFUSED|fetch/i.test(msg)) {
+        console.error("Hint: Check your internet connection and try again.");
+      } else if (/parse|JSON|schema/i.test(msg)) {
+        console.error("Hint: The LLM may have returned an unexpected response. Try running again.");
+      }
     }
     process.exit(1);
   }

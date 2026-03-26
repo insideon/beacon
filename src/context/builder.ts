@@ -46,7 +46,11 @@ export class ContextBuilder {
         return result.value.data;
       }
       const err = result.reason instanceof Error ? result.reason.message : String(result.reason);
-      process.stderr.write(`[beacon] Warning: ${collectorName} collector failed: ${err}\n`);
+      let hint = "";
+      if (collectorName === "git") {
+        hint = " Not a git repository? Git data will be skipped.";
+      }
+      process.stderr.write(`[beacon] Warning: ${collectorName} collector failed: ${err}.${hint}\n`);
       return null;
     }
 

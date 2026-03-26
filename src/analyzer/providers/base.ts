@@ -99,8 +99,9 @@ export function parseAnalysisResult(raw: string): AnalysisResult {
   try {
     parsed = JSON.parse(jsonString);
   } catch (err) {
+    const preview = raw.length > 200 ? raw.slice(0, 200) + "..." : raw;
     throw new Error(
-      `Failed to parse LLM response as JSON: ${err instanceof Error ? err.message : String(err)}\n\nRaw response:\n${raw}`
+      `Failed to parse LLM response as JSON: ${err instanceof Error ? err.message : String(err)}\n\nResponse preview (first 200 chars):\n${preview}`
     );
   }
 
