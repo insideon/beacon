@@ -151,18 +151,15 @@ describe("statusCommand", () => {
 // ---- analyzeCommand error handling ------------------------------------------
 
 describe("analyzeCommand", () => {
-  it("exits with code 1 and prints API key hint when API key is missing", async () => {
-    vi.doMock("../../context/builder.js", () => ({
-      ContextBuilder: vi.fn().mockImplementation(() => ({
-        build: vi.fn().mockResolvedValue(makeFakeContext()),
-      })),
-    }));
-
-    vi.doMock("../../analyzer/index.js", () => ({
-      createProvider: vi.fn().mockImplementation(() => {
-        throw new Error("API key required for Claude");
-      }),
-    }));
+  it("exits with code 1 and prints login hint when API key is missing", async () => {
+    // Mock resolveApiKey to return undefined (no key found)
+    vi.doMock("../../config/loader.js", async (importOriginal) => {
+      const actual = await importOriginal() as Record<string, unknown>;
+      return {
+        ...actual,
+        resolveApiKey: vi.fn().mockResolvedValue(undefined),
+      };
+    });
 
     const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(tempDir);
     const consoleErrorSpy = vi
@@ -187,26 +184,22 @@ describe("analyzeCommand", () => {
     const errorMessages = consoleErrorSpy.mock.calls
       .map((c) => String(c[0]))
       .join("\n");
-    expect(errorMessages).toContain("API key");
-    expect(errorMessages).toContain("beacon init");
+    expect(errorMessages).toContain("No API key found");
+    expect(errorMessages).toContain("beacon login");
   });
 });
 
 // ---- todoCommand error handling ---------------------------------------------
 
 describe("todoCommand", () => {
-  it("exits with code 1 and prints API key hint when API key is missing", async () => {
-    vi.doMock("../../context/builder.js", () => ({
-      ContextBuilder: vi.fn().mockImplementation(() => ({
-        build: vi.fn().mockResolvedValue(makeFakeContext()),
-      })),
-    }));
-
-    vi.doMock("../../analyzer/index.js", () => ({
-      createProvider: vi.fn().mockImplementation(() => {
-        throw new Error("API key required for Claude");
-      }),
-    }));
+  it("exits with code 1 and prints login hint when API key is missing", async () => {
+    vi.doMock("../../config/loader.js", async (importOriginal) => {
+      const actual = await importOriginal() as Record<string, unknown>;
+      return {
+        ...actual,
+        resolveApiKey: vi.fn().mockResolvedValue(undefined),
+      };
+    });
 
     const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(tempDir);
     const consoleErrorSpy = vi
@@ -231,7 +224,7 @@ describe("todoCommand", () => {
     const errorMessages = consoleErrorSpy.mock.calls
       .map((c) => String(c[0]))
       .join("\n");
-    expect(errorMessages).toContain("API key");
-    expect(errorMessages).toContain("beacon init");
+    expect(errorMessages).toContain("No API key found");
+    expect(errorMessages).toContain("beacon login");
   });
 });

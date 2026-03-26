@@ -1,4 +1,4 @@
-import { loadConfig } from "../../config/loader.js";
+import { loadConfig, resolveApiKey } from "../../config/loader.js";
 import { ContextBuilder } from "../../context/builder.js";
 import { createProvider } from "../../analyzer/index.js";
 import { renderTerminal } from "../../output/terminal.js";
@@ -11,18 +11,21 @@ export async function analyzeCommand(options: {
   const projectPath = process.cwd();
 
   try {
-    // 1. Load config
     const config = await loadConfig(projectPath);
+    const apiKey = await resolveApiKey(config.llm.provider, config.llm.apiKey);
 
-    // 2. Build context
+    if (!apiKey) {
+      console.error(
+        `No API key found for ${config.llm.provider}. Run 'beacon login' to set up your provider.`
+      );
+      process.exit(1);
+    }
+
     const builder = new ContextBuilder(config);
     const context = await builder.build(projectPath);
-
-    // 3. Analyze with LLM
-    const provider = createProvider(config);
+    const provider = createProvider(config.llm.provider, apiKey, config.llm.model);
     const result = await provider.analyze(context, "analyze");
 
-    // 4. Output
     if (options.json) {
       console.log(renderJson(result, context));
     } else {
@@ -31,10 +34,6 @@ export async function analyzeCommand(options: {
   } catch (error) {
     if (error instanceof Error) {
       console.error(`Error: ${error.message}`);
-      // If API key error, suggest running beacon init
-      if (error.message.includes("API key")) {
-        console.error("\nRun 'beacon init' to configure your API key.");
-      }
     }
     process.exit(1);
   }

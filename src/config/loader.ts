@@ -1,6 +1,7 @@
 import { readFile } from "fs/promises";
 import { join } from "path";
 import type { BeaconConfig, LLMConfig, AnalyzeConfig } from "./types.js";
+import { getApiKey } from "../auth/credentials.js";
 
 export type { BeaconConfig };
 
@@ -89,4 +90,28 @@ export async function loadConfig(projectPath: string): Promise<BeaconConfig> {
 
   const merged = mergeConfig(DEFAULT_CONFIG, userConfig);
   return resolveEnvVars(merged);
+}
+
+const ENV_VAR_MAP: Record<string, string> = {
+  claude: "ANTHROPIC_API_KEY",
+  openai: "OPENAI_API_KEY",
+  google: "GEMINI_API_KEY",
+  copilot: "GITHUB_TOKEN",
+  openrouter: "OPENROUTER_API_KEY",
+};
+
+export async function resolveApiKey(
+  provider: string,
+  configKey: string | undefined,
+  beaconDir?: string
+): Promise<string | undefined> {
+  if (configKey) return configKey;
+
+  const credKey = await getApiKey(provider, beaconDir);
+  if (credKey) return credKey;
+
+  const envVar = ENV_VAR_MAP[provider];
+  if (envVar && process.env[envVar]) return process.env[envVar];
+
+  return undefined;
 }

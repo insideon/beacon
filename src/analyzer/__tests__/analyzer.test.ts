@@ -1,23 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createProvider } from "../index.js";
-import { BeaconConfig } from "../../config/types.js";
-
-// Helper to make a BeaconConfig
-function makeConfig(overrides: Partial<BeaconConfig["llm"]> = {}): BeaconConfig {
-  return {
-    llm: {
-      provider: "claude",
-      apiKey: "test-api-key",
-      model: "claude-sonnet-4-6",
-      ...overrides,
-    },
-    analyze: {
-      include: ["**/*"],
-      exclude: ["node_modules"],
-      maxDepth: 5,
-    },
-  };
-}
 
 // Mock the Anthropic SDK before importing ClaudeProvider
 vi.mock("@anthropic-ai/sdk", () => {
@@ -29,6 +11,19 @@ vi.mock("@anthropic-ai/sdk", () => {
       },
     })),
     __mockCreate: mockCreate,
+  };
+});
+
+// Mock the Google Generative AI SDK
+vi.mock("@google/generative-ai", () => {
+  const mockGenerateContent = vi.fn();
+  return {
+    GoogleGenerativeAI: vi.fn().mockImplementation(() => ({
+      getGenerativeModel: vi.fn().mockReturnValue({
+        generateContent: mockGenerateContent,
+      }),
+    })),
+    __mockGenerateContent: mockGenerateContent,
   };
 });
 
@@ -49,43 +44,33 @@ vi.mock("openai", () => {
 
 describe("createProvider", () => {
   it("returns a ClaudeProvider when provider is 'claude'", () => {
-    const provider = createProvider(makeConfig({ provider: "claude" }));
+    const provider = createProvider("claude", "test-key");
     expect(provider.name).toBe("claude");
   });
 
-  it("throws when provider is 'claude' and apiKey is missing", () => {
-    expect(() =>
-      createProvider(makeConfig({ provider: "claude", apiKey: undefined }))
-    ).toThrow("API key required for Claude");
-  });
-
-  it("throws when provider is 'claude' and apiKey is empty string", () => {
-    expect(() =>
-      createProvider(makeConfig({ provider: "claude", apiKey: "" }))
-    ).toThrow("API key required for Claude");
-  });
-
   it("returns an OpenAIProvider when provider is 'openai'", () => {
-    const provider = createProvider(makeConfig({ provider: "openai", apiKey: "test-key" }));
+    const provider = createProvider("openai", "test-key");
     expect(provider.name).toBe("openai");
   });
 
-  it("throws when provider is 'openai' and apiKey is missing", () => {
-    expect(() =>
-      createProvider(makeConfig({ provider: "openai", apiKey: undefined }))
-    ).toThrow("API key required for OpenAI");
+  it("returns a GoogleProvider when provider is 'google'", () => {
+    const provider = createProvider("google", "test-key");
+    expect(provider.name).toBe("google");
   });
 
-  it("throws when provider is 'openai' and apiKey is empty string", () => {
-    expect(() =>
-      createProvider(makeConfig({ provider: "openai", apiKey: "" }))
-    ).toThrow("API key required for OpenAI");
+  it("returns a CopilotProvider when provider is 'copilot'", () => {
+    const provider = createProvider("copilot", "test-key");
+    expect(provider.name).toBe("copilot");
+  });
+
+  it("returns an OpenRouterProvider when provider is 'openrouter'", () => {
+    const provider = createProvider("openrouter", "test-key");
+    expect(provider.name).toBe("openrouter");
   });
 
   it("throws for unknown provider", () => {
-    // Force an unknown provider via type assertion
     expect(() =>
-      createProvider(makeConfig({ provider: "unknown" as "claude" }))
+      createProvider("unknown", "test-key")
     ).toThrow("Unknown LLM provider: unknown");
   });
 });
