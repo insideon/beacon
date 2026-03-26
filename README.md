@@ -192,7 +192,7 @@ jobs:
 - [x] Multi-provider support (Google, Copilot, OpenRouter)
 - [x] `beacon login` command
 - [x] GitHub Action integration
-- [ ] Analysis result caching
+- [x] Analysis result caching
 
 ## Contributing
 
