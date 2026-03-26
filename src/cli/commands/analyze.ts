@@ -7,10 +7,16 @@ import { renderJson } from "../../output/json.js";
 export async function analyzeCommand(options: {
   json?: boolean;
   withTodo?: boolean;
+  verbose?: boolean;
 }): Promise<void> {
   const projectPath = process.cwd();
+  const verbose = options.verbose ?? false;
+  const log = (msg: string) => {
+    if (verbose) console.error(`[verbose] ${msg}`);
+  };
 
   try {
+    log("Loading config from .beaconrc.json");
     const config = await loadConfig(projectPath);
     const apiKey = await resolveApiKey(config.llm.provider, config.llm.apiKey);
 
@@ -21,10 +27,20 @@ export async function analyzeCommand(options: {
       process.exit(1);
     }
 
+    log("Collecting project data...");
     const builder = new ContextBuilder(config);
-    const context = await builder.build(projectPath);
+    const context = await builder.build(projectPath, verbose);
+
+    const modelLabel = config.llm.model ?? "default";
+    log(`Using provider: ${config.llm.provider} (${modelLabel})`);
+
     const provider = createProvider(config.llm.provider, apiKey, config.llm.model);
+
+    log("Calling LLM API...");
+    const llmStart = Date.now();
     const result = await provider.analyze(context, "analyze");
+    const llmElapsed = ((Date.now() - llmStart) / 1000).toFixed(1);
+    log(`LLM response received (${llmElapsed}s)`);
 
     if (options.json) {
       console.log(renderJson(result, context));

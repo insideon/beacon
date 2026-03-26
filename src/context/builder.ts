@@ -27,7 +27,11 @@ export class ContextBuilder {
     this.docsCollector = new DocsCollector();
   }
 
-  async build(projectPath: string): Promise<ProjectContext> {
+  async build(projectPath: string, verbose = false): Promise<ProjectContext> {
+    const log = (msg: string) => {
+      if (verbose) process.stderr.write(`[verbose]   ${msg}\n`);
+    };
+
     // Run all collectors in parallel
     const [gitResult, codeResult, configResult, docsResult] =
       await Promise.allSettled([
@@ -58,6 +62,36 @@ export class ContextBuilder {
     const codeData = extractOrWarn<CodeData>(codeResult, "code");
     const configData = extractOrWarn<ConfigData>(configResult, "config");
     const docsData = extractOrWarn<DocsData>(docsResult, "docs");
+
+    // Log verbose collector summaries
+    if (gitData) {
+      log(`Git: ${gitData.recentCommits.length} commits, ${gitData.activeBranches.length} branches`);
+    } else {
+      log("Git: collector failed or no git repository");
+    }
+
+    if (codeData) {
+      log(`Code: ${codeData.summary.totalFiles} files, ${codeData.todos.length} TODOs`);
+    } else {
+      log("Code: collector failed");
+    }
+
+    if (configData) {
+      const depCount =
+        Object.keys(configData.packageJson?.dependencies ?? {}).length +
+        Object.keys(configData.packageJson?.devDependencies ?? {}).length;
+      log(`Config: ${depCount} dependencies`);
+    } else {
+      log("Config: collector failed");
+    }
+
+    if (docsData) {
+      const readmeStatus = docsData.readme?.exists ? "README found" : "no README";
+      const changelogStatus = docsData.changelog?.exists ? "CHANGELOG found" : "no CHANGELOG";
+      log(`Docs: ${readmeStatus}, ${changelogStatus}`);
+    } else {
+      log("Docs: collector failed");
+    }
 
     // Derive project.name: prefer package.json name, fall back to directory name
     const projectName =

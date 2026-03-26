@@ -11,7 +11,8 @@ const program = new Command();
 program
   .name("beacon")
   .description("Your codebase has a purpose. Beacon finds it.")
-  .version("0.1.0");
+  .version("0.1.0")
+  .option("--verbose", "Enable verbose logging to stderr");
 
 // Default action (no subcommand) = analyze + todo
 program
@@ -19,21 +20,28 @@ program
   .option("--no-color", "Disable colored output")
   .action(async (options) => {
     // Run analyze+todo as default
-    await analyzeCommand({ ...options, withTodo: true });
+    const verbose = program.opts().verbose ?? false;
+    await analyzeCommand({ ...options, withTodo: true, verbose });
   });
 
 program
   .command("analyze")
   .description("Analyze the project")
   .option("--json", "Output as JSON")
-  .action(analyzeCommand);
+  .action((options) => {
+    const verbose = program.opts().verbose ?? false;
+    return analyzeCommand({ ...options, verbose });
+  });
 
 program
   .command("todo")
   .description("Show prioritized task list")
   .option("--today", "Focus on today's tasks only")
   .option("--json", "Output as JSON")
-  .action(todoCommand);
+  .action((options) => {
+    const verbose = program.opts().verbose ?? false;
+    return todoCommand({ ...options, verbose });
+  });
 
 program
   .command("status")
