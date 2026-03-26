@@ -5,7 +5,6 @@ import { renderTerminal } from "../../output/terminal.js";
 import { renderJson } from "../../output/json.js";
 import { getCache, setCache } from "../../cache/index.js";
 import { execSync } from "child_process";
-import ora from "ora";
 
 function getHeadCommit(): string | null {
   try {
@@ -41,13 +40,13 @@ export async function analyzeCommand(options: {
       process.exit(1);
     }
 
-    const spinner = !isJson ? ora() : null;
+    const status = (msg: string) => { if (!isJson) process.stderr.write(`${msg}\n`); };
 
-    spinner?.start("Collecting project data...");
+    status("⏳ Collecting project data...");
     log("Collecting project data...");
     const builder = new ContextBuilder(config);
     const context = await builder.build(projectPath, verbose);
-    spinner?.succeed("Project data collected");
+    status("✔ Project data collected");
 
     const commitHash = getHeadCommit();
 
@@ -72,12 +71,12 @@ export async function analyzeCommand(options: {
 
     const provider = createProvider(config.llm.provider, apiKey, config.llm.model);
 
-    spinner?.start("Analyzing with AI...");
+    status("⏳ Analyzing with AI...");
     log("Calling LLM API...");
     const llmStart = Date.now();
     const result = await provider.analyze(context, "analyze");
     const llmElapsed = ((Date.now() - llmStart) / 1000).toFixed(1);
-    spinner?.succeed(`Analysis complete (${llmElapsed}s)`);
+    status(`✔ Analysis complete (${llmElapsed}s)`);
     log(`LLM response received (${llmElapsed}s)`);
 
     // Save to cache

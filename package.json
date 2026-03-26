@@ -1,6 +1,6 @@
 {
   "name": "beacon-ai",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "AI-powered CLI that analyzes your codebase and tells you what to work on next",
   "type": "module",
   "license": "MIT",
