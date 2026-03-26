@@ -24,6 +24,16 @@ function globalOpts() {
 // Default action (no subcommand) = analyze
 program
   .action(async () => {
+    const args = program.args;
+    if (args.length > 0) {
+      if (args[0] === "help") {
+        program.help();
+        return;
+      }
+      console.error(`Unknown command: ${args[0]}\n`);
+      program.help();
+      return;
+    }
     await analyzeCommand({ ...globalOpts(), withTodo: true });
   });
 
@@ -58,17 +68,5 @@ program
   .command("login")
   .description("Set up your LLM provider and API key")
   .action(loginCommand);
-
-program
-  .command("help")
-  .description("Show help information")
-  .action(() => {
-    program.help();
-  });
-
-program.on("command:*", () => {
-  console.error(`Unknown command: ${program.args.join(" ")}\n`);
-  program.help();
-});
 
 program.parse();
