@@ -11,7 +11,7 @@ const program = new Command();
 program
   .name("beacon")
   .description("Your codebase has a purpose. Beacon finds it.")
-  .version("0.1.0")
+  .version("1.0.0")
   .option("--json", "Output as JSON")
   .option("--verbose", "Enable verbose logging to stderr")
   .option("--no-cache", "Skip analysis cache");

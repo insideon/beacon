@@ -3,6 +3,9 @@ docs/
 .claude/
 .beacon/
 .beaconrc.json
+.github/
+**/__tests__/
+**/*.test.ts
 vitest.config.ts
 tsup.config.ts
 tsconfig.json

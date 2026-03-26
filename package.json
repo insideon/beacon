@@ -1,8 +1,29 @@
 {
   "name": "beacon-ai",
-  "version": "0.1.4",
-  "description": "AI-powered project health analyzer CLI",
+  "version": "1.0.0",
+  "description": "AI-powered CLI that analyzes your codebase and tells you what to work on next",
   "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/insideon/beacon.git"
+  },
+  "homepage": "https://github.com/insideon/beacon",
+  "bugs": {
+    "url": "https://github.com/insideon/beacon/issues"
+  },
+  "keywords": [
+    "ai",
+    "cli",
+    "codebase",
+    "analyzer",
+    "llm",
+    "claude",
+    "openai",
+    "gemini",
+    "code-review",
+    "developer-tools"
+  ],
   "bin": {
     "beacon": "dist/index.js"
   },
