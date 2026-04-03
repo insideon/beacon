@@ -22,6 +22,9 @@ import { reportCommand } from "./commands/report.js";
 import { onboardCommand } from "./commands/onboard.js";
 import { monorepoCommand } from "./commands/monorepo.js";
 import { issuesCommand } from "./commands/issues.js";
+import { multiRepoCommand } from "./commands/multi-repo.js";
+import { dashboardCommand } from "./commands/dashboard.js";
+import { autopilotCommand } from "./commands/autopilot.js";
 
 const program = new Command();
 
@@ -168,6 +171,37 @@ program
   .description("Generate a stakeholder-friendly project health report")
   .action(() => {
     return reportCommand(globalOpts());
+  });
+
+program
+  .command("multi-repo")
+  .description("Analyze multiple repositories and aggregate results")
+  .argument("<repos...>", "Paths to repositories")
+  .action((repos) => {
+    return multiRepoCommand({ ...globalOpts(), repos });
+  });
+
+program
+  .command("dashboard")
+  .description("Open a web dashboard showing project health")
+  .option("--port <n>", "Port number", "3737")
+  .action((options) => {
+    return dashboardCommand({ port: parseInt(options.port, 10) });
+  });
+
+program
+  .command("autopilot")
+  .description("Dispatch tasks to Claude Code for automatic fixing")
+  .option("--dry-run", "Preview tasks without executing")
+  .option("--max-tasks <n>", "Maximum tasks to dispatch", "3")
+  .option("--min-priority <level>", "Minimum priority level", "high")
+  .action((options) => {
+    return autopilotCommand({
+      ...globalOpts(),
+      dryRun: options.dryRun,
+      maxTasks: parseInt(options.maxTasks, 10),
+      minPriority: options.minPriority,
+    });
   });
 
 program.parse();

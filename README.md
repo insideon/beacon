@@ -86,6 +86,9 @@ Get your API key here: https://console.anthropic.com/settings/keys
 | `beacon monorepo` | Analyze all packages in a monorepo |
 | `beacon issues` | Create GitHub Issues from recommendations |
 | `beacon analyze --consensus` | Multi-model consensus analysis |
+| `beacon multi-repo <paths...>` | Analyze multiple repositories at once |
+| `beacon dashboard` | Open a web dashboard with health charts |
+| `beacon autopilot` | Dispatch tasks to Claude Code automatically |
 | `beacon schedule set HH:MM` | Schedule daily reminder notifications |
 | `beacon init` | Create a `.beaconrc.json` config file |
 | `beacon login` | Set up your LLM provider and API key |
@@ -246,22 +249,22 @@ npm run build
 - [x] Branch impact analysis — `beacon diff main..feature` to assess how a branch affects project health
 
 ### Team Visibility — "shared context, not private conversations"
-- [ ] Team dashboard — Aggregate project health across repositories
-- [ ] Multi-repo analysis — Organization-level insights across multiple repositories
+- [x] Team dashboard — Local web dashboard with health charts
+- [x] Multi-repo analysis — Organization-level insights across multiple repositories
 - [x] Slack/Discord webhook — Automatically push analysis results to team channels
 - [x] Sprint reports — Auto-generate standup/retrospective summaries from git activity
 - [x] Non-developer reports — Structured project summaries for PMs and stakeholders
 - [x] Issue tracker integration — Auto-create GitHub Issues from detected problems
 
 ### AI Tool Integration — "make your AI coding tools smarter"
-- [ ] Auto-pilot mode — Dispatch detected tasks to AI coding agents for execution
+- [x] Auto-pilot mode — Dispatch detected tasks to AI coding agents for execution
 - [x] Project onboarding — `beacon onboard` generates a getting-started guide for new developers
 
 ### Extensibility
 - [x] Custom prompt templates — User-defined analysis prompts
 - [x] Multi-model consensus — Run multiple LLMs and synthesize a unified analysis
 - [x] Local LLM support — Run analysis with Ollama for security-sensitive codebases
-- [ ] Plugin system — Custom collectors and analysis rules per team
+- [x] Plugin system — Custom collectors and analysis rules per team
 - [x] Monorepo support — Per-package analysis and dependency mapping within monorepos
 
 ## Contributing
