@@ -19,6 +19,7 @@ import { scheduleCommand } from "./commands/schedule.js";
 import { sprintCommand } from "./commands/sprint.js";
 import { webhookCommand } from "./commands/webhook.js";
 import { reportCommand } from "./commands/report.js";
+import { onboardCommand } from "./commands/onboard.js";
 
 const program = new Command();
 
@@ -134,6 +135,13 @@ program
   .option("--platform <name>", "Force platform: slack or discord")
   .action((url, options) => {
     return webhookCommand({ ...globalOpts(), url, platform: options.platform });
+  });
+
+program
+  .command("onboard")
+  .description("Generate a getting-started guide for new developers")
+  .action(() => {
+    return onboardCommand(globalOpts());
   });
 
 program

@@ -4,6 +4,7 @@ import { OpenAIProvider } from "./providers/openai.js";
 import { GoogleProvider } from "./providers/google.js";
 import { CopilotProvider } from "./providers/copilot.js";
 import { OpenRouterProvider } from "./providers/openrouter.js";
+import { OllamaProvider } from "./providers/ollama.js";
 
 export function createProvider(provider: string, apiKey: string, model?: string): LLMProvider {
   switch (provider) {
@@ -17,6 +18,8 @@ export function createProvider(provider: string, apiKey: string, model?: string)
       return new CopilotProvider(apiKey, model);
     case "openrouter":
       return new OpenRouterProvider(apiKey, model);
+    case "ollama":
+      return new OllamaProvider(apiKey, model);
     default:
       throw new Error(`Unknown LLM provider: ${provider}`);
   }

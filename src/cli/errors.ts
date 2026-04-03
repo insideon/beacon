@@ -24,6 +24,13 @@ const errorPatterns: { test: RegExp; error: UserError }[] = [
     },
   },
   {
+    test: /Ollama API error|Is Ollama running/i,
+    error: {
+      message: "Could not connect to Ollama.",
+      hint: "Make sure Ollama is running (ollama serve) and try again.",
+    },
+  },
+  {
     test: /network|ECONNREFUSED|ENOTFOUND|ETIMEDOUT|fetch failed/i,
     error: {
       message: "Could not reach the API server.",

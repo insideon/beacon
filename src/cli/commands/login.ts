@@ -28,6 +28,11 @@ const PROVIDERS = [
     value: "openrouter" as const,
     keyPage: "https://openrouter.ai/keys",
   },
+  {
+    name: "Ollama (local)",
+    value: "ollama" as const,
+    keyPage: "https://ollama.com/download",
+  },
 ];
 
 export async function loginCommand(): Promise<void> {
@@ -46,16 +51,23 @@ export async function loginCommand(): Promise<void> {
 
     const providerInfo = PROVIDERS.find((p) => p.value === provider)!;
 
-    console.log(`\nGet your API key here: ${providerInfo.keyPage}`);
+    let apiKey: string;
 
-    const apiKey = await password({
-      message: "Paste your API key:",
-      mask: "*",
-    });
+    if (provider === "ollama") {
+      console.log(`\nOllama runs locally — no API key needed.`);
+      console.log(`Make sure Ollama is running: ${providerInfo.keyPage}`);
+      apiKey = "ollama-local";
+    } else {
+      console.log(`\nGet your API key here: ${providerInfo.keyPage}`);
+      apiKey = await password({
+        message: "Paste your API key:",
+        mask: "*",
+      });
 
-    if (!apiKey) {
-      console.error("No API key provided. Aborted.");
-      process.exit(1);
+      if (!apiKey) {
+        console.error("No API key provided. Aborted.");
+        process.exit(1);
+      }
     }
 
     const creds = await loadCredentials();

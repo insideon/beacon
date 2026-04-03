@@ -126,27 +126,43 @@ export abstract class BaseProvider implements LLMProvider {
   protected abstract callApi(prompt: string): Promise<string>;
 
   async analyze(context: ProjectContext, promptType: string): Promise<AnalysisResult> {
-    // In bundled dist: __dirname/prompts/, in source: __dirname/../prompts/
-    const bundledPath = join(__dirname, "prompts", `${promptType}.md`);
-    const sourcePath = join(__dirname, "../prompts", `${promptType}.md`);
-    let promptPath: string;
+    const template = this.loadTemplate(promptType);
+    const prompt = renderPrompt(template, context);
+    const raw = await this.callApi(prompt);
+    return parseAnalysisResult(raw);
+  }
+
+  /**
+   * Load a prompt template. Resolution order:
+   * 1. User-defined: .beacon/prompts/{promptType}.md (project root)
+   * 2. Bundled: dist/prompts/{promptType}.md
+   * 3. Source: src/analyzer/prompts/{promptType}.md
+   */
+  private loadTemplate(promptType: string): string {
+    // 1. User-defined custom prompt
+    const userPath = join(process.cwd(), ".beacon", "prompts", `${promptType}.md`);
     try {
-      readFileSync(bundledPath);
-      promptPath = bundledPath;
+      return readFileSync(userPath, "utf-8");
     } catch {
-      promptPath = sourcePath;
+      // Not found — try built-in
     }
-    let template: string;
+
+    // 2. Bundled dist path
+    const bundledPath = join(__dirname, "prompts", `${promptType}.md`);
     try {
-      template = readFileSync(promptPath, "utf-8");
+      return readFileSync(bundledPath, "utf-8");
+    } catch {
+      // Not found — try source path
+    }
+
+    // 3. Source path
+    const sourcePath = join(__dirname, "../prompts", `${promptType}.md`);
+    try {
+      return readFileSync(sourcePath, "utf-8");
     } catch (err) {
       throw new Error(
         `Failed to load prompt template "${promptType}": ${err instanceof Error ? err.message : String(err)}`
       );
     }
-
-    const prompt = renderPrompt(template, context);
-    const raw = await this.callApi(prompt);
-    return parseAnalysisResult(raw);
   }
 }
