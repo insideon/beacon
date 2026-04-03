@@ -90,6 +90,7 @@ Get your API key here: https://console.anthropic.com/settings/keys
 | `beacon dashboard` | Open a web dashboard with health charts |
 | `beacon autopilot` | Dispatch tasks to Claude Code automatically |
 | `beacon schedule set HH:MM` | Schedule daily reminder notifications |
+| `beacon language` | Set the output language for analysis results |
 | `beacon init` | Create a `.beaconrc.json` config file |
 | `beacon login` | Set up your LLM provider and API key |
 
@@ -187,6 +188,12 @@ Collectors (parallel) → Context Builder → LLM Analyzer → Presenter
 | GitHub Copilot | gpt-4o |
 | OpenRouter | anthropic/claude-sonnet-4 |
 | Ollama (local) | llama3.1 |
+
+## Supported Languages
+
+Run `beacon language` to set your preferred output language. Analysis results (summaries, recommendations, reasoning) will be generated in the selected language.
+
+English, 한국어, 日本語, 中文, Español, Français, Deutsch, Português, Русский, العربية, हिन्दी, Tiếng Việt, ไทย, Bahasa Indonesia, Türkçe
 
 ## GitHub Action
 
