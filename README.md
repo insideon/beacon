@@ -1,6 +1,6 @@
 <p align="center">
   <h1 align="center">Beacon</h1>
-  <p align="center">Your codebase has a purpose. Beacon finds it.</p>
+  <p align="center">AI coding tools see the moment. Beacon sees the trajectory.</p>
   <p align="center">
     <a href="https://github.com/insideon/beacon/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
     <a href="https://www.npmjs.com/package/beacon-ai"><img src="https://img.shields.io/npm/v/beacon-ai.svg" alt="npm version"></a>
@@ -10,19 +10,32 @@
 
 ---
 
-Beacon is an AI-powered CLI tool that analyzes your codebase and tells you what to work on next. It reads your git history, code structure, project config, and documentation to generate prioritized task lists and strategic recommendations.
+Beacon is the persistent monitoring layer for your codebase. While AI coding tools like Claude Code are powerful in the moment, they start fresh every session. Beacon runs continuously — in CI, on a schedule, or from the terminal — accumulating structured insights over time so you always know where your project stands and where it's heading.
+
+It reads your git history, code structure, dependencies, and documentation to generate prioritized task lists, health metrics, and strategic recommendations that persist across sessions and are shared across your team.
+
+## Why Beacon?
+
+AI coding tools are powerful in the moment but ephemeral — each session starts from scratch. Beacon fills the gap:
+
+| | AI Coding Tools | Beacon |
+|---|---|---|
+| **Duration** | Session-based | Persistent across sessions |
+| **Trigger** | Human prompts | Runs unattended (CI, cron, CLI) |
+| **Output** | Free-form text | Structured, comparable metrics |
+| **Scope** | One conversation | Team-wide shared state |
+| **Time axis** | Snapshot | Trends over time |
 
 ## Features
 
-- **Smart Analysis** — Understands your project's purpose, tech stack, and current state
+- **Persistent Analysis** — Structured results cached per commit, accumulating over time
+- **Unattended Operation** — Runs in CI, cron, or terminal without human prompting
 - **Prioritized Todo Lists** — AI-generated tasks ranked by urgency and impact
 - **Strategic Recommendations** — High-level direction for your project's growth
 - **Multiple Data Sources** — Git history, code quality, dependencies, documentation
 - **5 LLM Providers** — Claude, OpenAI, Google Gemini, GitHub Copilot, OpenRouter
-- **Easy Setup** — `beacon login` for interactive API key configuration
-- **Result Caching** — Caches results per git commit, skips redundant LLM calls
 - **GitHub Action** — Automatic PR analysis with comment posting
-- **JSON Output** — Machine-readable output for CI/CD integration
+- **JSON Output** — Machine-readable output for CI/CD and dashboards
 
 ## Quick Start
 
@@ -213,11 +226,31 @@ npm run build
 
 ## Roadmap
 
-- [ ] Multi-model consensus — Run multiple LLMs, compare results, and synthesize a unified analysis
-- [ ] Custom prompt templates — User-defined analysis prompts
-- [ ] `beacon diff` — Analyze only PR/branch changes
+### Continuous Monitoring — "always watching, even when you're not"
+- [ ] Trend tracking — Accumulate analysis per commit to visualize tech debt and health over time
 - [ ] Scheduled reminders — Daily task notifications at your preferred time
-- [ ] Auto-pilot mode — Automatically dispatch tasks to AI coding agents for execution
+- [ ] Dependency alerts — Proactive notifications for vulnerabilities and outdated packages
+- [ ] CI quality gate — Block PRs that fall below configurable health thresholds
+- [ ] Branch impact analysis — `beacon diff main..feature` to assess how a branch affects project health
+
+### Team Visibility — "shared context, not private conversations"
+- [ ] Team dashboard — Aggregate project health across repositories
+- [ ] Multi-repo analysis — Organization-level insights across multiple repositories
+- [ ] Slack/Discord webhook — Automatically push analysis results to team channels
+- [ ] Sprint reports — Auto-generate standup/retrospective summaries from git activity
+- [ ] Non-developer reports — Structured project summaries for PMs and stakeholders
+- [ ] Issue tracker integration — Auto-create Linear/Jira/GitHub Issues from detected problems
+
+### AI Tool Integration — "make your AI coding tools smarter"
+- [ ] Auto-pilot mode — Dispatch detected tasks to AI coding agents for execution
+- [ ] Project onboarding — `beacon onboard` generates a getting-started guide for new developers
+
+### Extensibility
+- [ ] Custom prompt templates — User-defined analysis prompts
+- [ ] Multi-model consensus — Run multiple LLMs and synthesize a unified analysis
+- [ ] Local LLM support — Run analysis with Ollama for security-sensitive codebases
+- [ ] Plugin system — Custom collectors and analysis rules per team
+- [ ] Monorepo support — Per-package analysis and dependency mapping within monorepos
 
 ## Contributing
 
