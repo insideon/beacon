@@ -2,6 +2,7 @@ import chalk from "chalk";
 import { loadConfig, resolveApiKey } from "../../config/loader.js";
 import { ContextBuilder } from "../../context/builder.js";
 import { createProvider } from "../../analyzer/index.js";
+import { getCache, setCache } from "../../cache/index.js";
 import { execSync } from "child_process";
 import { createSpinner } from "../spinner.js";
 import { handleCliError } from "../errors.js";
@@ -132,11 +133,28 @@ export async function reportCommand(options: {
     spinner?.succeed("Project data collected");
 
     const commitHash = getHeadCommit();
-    const provider = createProvider(config.llm.provider, apiKey, config.llm.model);
+    const useCache = !(options.noCache ?? false);
 
-    spinner?.start("Generating report...");
-    const result = await provider.analyze(context, "analyze");
-    spinner?.succeed("Report ready");
+    // Check cache first
+    let result: AnalysisResult;
+    if (useCache && commitHash) {
+      const cached = await getCache(commitHash, "analyze");
+      if (cached) {
+        log("Cache hit!");
+        result = cached;
+      } else {
+        const provider = createProvider(config.llm.provider, apiKey, config.llm.model);
+        spinner?.start("Generating report...");
+        result = await provider.analyze(context, "analyze", config.language);
+        spinner?.succeed("Report ready");
+        await setCache(commitHash, "analyze", result);
+      }
+    } else {
+      const provider = createProvider(config.llm.provider, apiKey, config.llm.model);
+      spinner?.start("Generating report...");
+      result = await provider.analyze(context, "analyze", config.language);
+      spinner?.succeed("Report ready");
+    }
 
     const snapshot = buildSnapshot(context, result, commitHash ?? "unknown", getCurrentBranch());
 

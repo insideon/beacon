@@ -154,72 +154,55 @@ export class ConfigCollector implements Collector<ConfigData> {
       hasPrettierConfig ||
       !!(pkgJson as Record<string, unknown> | null)?.["prettier"];
 
-    // npm audit (vulnerabilities)
+    // npm audit (vulnerabilities) — use || true since audit exits non-zero when vulns found
     let vulnerabilities: VulnerabilityInfo | undefined;
     if (pkgJson) {
       try {
-        const auditOut = execSync("npm audit --json 2>/dev/null", {
+        const auditOut = execSync("npm audit --json 2>/dev/null || true", {
           encoding: "utf-8",
           cwd: projectPath,
-          timeout: 15000,
+          timeout: 10000,
         });
-        const audit = JSON.parse(auditOut);
-        const vuln = audit.metadata?.vulnerabilities;
-        if (vuln) {
-          vulnerabilities = {
-            total: (vuln.critical ?? 0) + (vuln.high ?? 0) + (vuln.moderate ?? 0) + (vuln.low ?? 0),
-            critical: vuln.critical ?? 0,
-            high: vuln.high ?? 0,
-            moderate: vuln.moderate ?? 0,
-            low: vuln.low ?? 0,
-          };
+        if (auditOut.trim()) {
+          const audit = JSON.parse(auditOut);
+          const vuln = audit.metadata?.vulnerabilities;
+          if (vuln) {
+            vulnerabilities = {
+              total: (vuln.critical ?? 0) + (vuln.high ?? 0) + (vuln.moderate ?? 0) + (vuln.low ?? 0),
+              critical: vuln.critical ?? 0,
+              high: vuln.high ?? 0,
+              moderate: vuln.moderate ?? 0,
+              low: vuln.low ?? 0,
+            };
+          }
         }
       } catch {
         // npm audit may fail or not be available — skip
       }
     }
 
-    // npm outdated
+    // npm outdated — use || true since outdated exits non-zero when packages are outdated
     let outdatedPackages: OutdatedPackage[] | undefined;
     if (pkgJson) {
       try {
-        const outdatedOut = execSync("npm outdated --json 2>/dev/null", {
+        const outdatedOut = execSync("npm outdated --json 2>/dev/null || true", {
           encoding: "utf-8",
           cwd: projectPath,
-          timeout: 15000,
+          timeout: 10000,
         });
-        const outdated = JSON.parse(outdatedOut);
-        outdatedPackages = Object.entries(outdated).map(
-          ([name, info]: [string, any]) => ({
-            name,
-            current: info.current ?? "unknown",
-            wanted: info.wanted ?? "unknown",
-            latest: info.latest ?? "unknown",
-          })
-        );
-      } catch {
-        // npm outdated exits with code 1 when packages are outdated
-        // Try to parse stdout anyway
-        try {
-          const outdatedOut = execSync("npm outdated --json 2>/dev/null || true", {
-            encoding: "utf-8",
-            cwd: projectPath,
-            timeout: 15000,
-          });
-          if (outdatedOut.trim()) {
-            const outdated = JSON.parse(outdatedOut);
-            outdatedPackages = Object.entries(outdated).map(
-              ([name, info]: [string, any]) => ({
-                name,
-                current: info.current ?? "unknown",
-                wanted: info.wanted ?? "unknown",
-                latest: info.latest ?? "unknown",
-              })
-            );
-          }
-        } catch {
-          // skip
+        if (outdatedOut.trim()) {
+          const outdated = JSON.parse(outdatedOut);
+          outdatedPackages = Object.entries(outdated).map(
+            ([name, info]: [string, any]) => ({
+              name,
+              current: info.current ?? "unknown",
+              wanted: info.wanted ?? "unknown",
+              latest: info.latest ?? "unknown",
+            })
+          );
         }
+      } catch {
+        // skip
       }
     }
 
