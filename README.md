@@ -76,6 +76,14 @@ Get your API key here: https://console.anthropic.com/settings/keys
 | `beacon todo` | Get a prioritized task list |
 | `beacon todo --today` | Show only today's top tasks |
 | `beacon status` | Quick project overview without AI (no API key needed) |
+| `beacon trend` | Show project health trends over time |
+| `beacon gate` | CI quality gate — check health against thresholds |
+| `beacon diff [base]` | Compare current branch health against a base branch |
+| `beacon sprint` | Generate a sprint/standup report from git activity |
+| `beacon report` | Stakeholder-friendly project health report |
+| `beacon webhook <url>` | Send analysis results to Slack or Discord |
+| `beacon onboard` | Generate a getting-started guide for new developers |
+| `beacon schedule set HH:MM` | Schedule daily reminder notifications |
 | `beacon init` | Create a `.beaconrc.json` config file |
 | `beacon login` | Set up your LLM provider and API key |
 
@@ -172,6 +180,7 @@ Collectors (parallel) → Context Builder → LLM Analyzer → Presenter
 | Google Gemini | gemini-2.5-flash |
 | GitHub Copilot | gpt-4o |
 | OpenRouter | anthropic/claude-sonnet-4 |
+| Ollama (local) | llama3.1 |
 
 ## GitHub Action
 
@@ -227,28 +236,28 @@ npm run build
 ## Roadmap
 
 ### Continuous Monitoring — "always watching, even when you're not"
-- [ ] Trend tracking — Accumulate analysis per commit to visualize tech debt and health over time
-- [ ] Scheduled reminders — Daily task notifications at your preferred time
-- [ ] Dependency alerts — Proactive notifications for vulnerabilities and outdated packages
-- [ ] CI quality gate — Block PRs that fall below configurable health thresholds
-- [ ] Branch impact analysis — `beacon diff main..feature` to assess how a branch affects project health
+- [x] Trend tracking — Accumulate analysis per commit to visualize tech debt and health over time
+- [x] Scheduled reminders — Daily task notifications at your preferred time
+- [x] Dependency alerts — Proactive notifications for vulnerabilities and outdated packages
+- [x] CI quality gate — Block PRs that fall below configurable health thresholds
+- [x] Branch impact analysis — `beacon diff main..feature` to assess how a branch affects project health
 
 ### Team Visibility — "shared context, not private conversations"
 - [ ] Team dashboard — Aggregate project health across repositories
 - [ ] Multi-repo analysis — Organization-level insights across multiple repositories
-- [ ] Slack/Discord webhook — Automatically push analysis results to team channels
-- [ ] Sprint reports — Auto-generate standup/retrospective summaries from git activity
-- [ ] Non-developer reports — Structured project summaries for PMs and stakeholders
+- [x] Slack/Discord webhook — Automatically push analysis results to team channels
+- [x] Sprint reports — Auto-generate standup/retrospective summaries from git activity
+- [x] Non-developer reports — Structured project summaries for PMs and stakeholders
 - [ ] Issue tracker integration — Auto-create Linear/Jira/GitHub Issues from detected problems
 
 ### AI Tool Integration — "make your AI coding tools smarter"
 - [ ] Auto-pilot mode — Dispatch detected tasks to AI coding agents for execution
-- [ ] Project onboarding — `beacon onboard` generates a getting-started guide for new developers
+- [x] Project onboarding — `beacon onboard` generates a getting-started guide for new developers
 
 ### Extensibility
-- [ ] Custom prompt templates — User-defined analysis prompts
+- [x] Custom prompt templates — User-defined analysis prompts
 - [ ] Multi-model consensus — Run multiple LLMs and synthesize a unified analysis
-- [ ] Local LLM support — Run analysis with Ollama for security-sensitive codebases
+- [x] Local LLM support — Run analysis with Ollama for security-sensitive codebases
 - [ ] Plugin system — Custom collectors and analysis rules per team
 - [ ] Monorepo support — Per-package analysis and dependency mapping within monorepos
 
