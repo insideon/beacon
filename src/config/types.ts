@@ -17,8 +17,13 @@ export interface GateConfig {
   maxVulnerabilities?: number;
 }
 
+export interface ConsensusConfig {
+  providers: { provider: LLMConfig["provider"]; model?: string }[];
+}
+
 export interface BeaconConfig {
   llm: LLMConfig;
   analyze: AnalyzeConfig;
   gate?: GateConfig;
+  consensus?: ConsensusConfig;
 }

@@ -83,6 +83,9 @@ Get your API key here: https://console.anthropic.com/settings/keys
 | `beacon report` | Stakeholder-friendly project health report |
 | `beacon webhook <url>` | Send analysis results to Slack or Discord |
 | `beacon onboard` | Generate a getting-started guide for new developers |
+| `beacon monorepo` | Analyze all packages in a monorepo |
+| `beacon issues` | Create GitHub Issues from recommendations |
+| `beacon analyze --consensus` | Multi-model consensus analysis |
 | `beacon schedule set HH:MM` | Schedule daily reminder notifications |
 | `beacon init` | Create a `.beaconrc.json` config file |
 | `beacon login` | Set up your LLM provider and API key |
@@ -248,7 +251,7 @@ npm run build
 - [x] Slack/Discord webhook — Automatically push analysis results to team channels
 - [x] Sprint reports — Auto-generate standup/retrospective summaries from git activity
 - [x] Non-developer reports — Structured project summaries for PMs and stakeholders
-- [ ] Issue tracker integration — Auto-create Linear/Jira/GitHub Issues from detected problems
+- [x] Issue tracker integration — Auto-create GitHub Issues from detected problems
 
 ### AI Tool Integration — "make your AI coding tools smarter"
 - [ ] Auto-pilot mode — Dispatch detected tasks to AI coding agents for execution
@@ -256,10 +259,10 @@ npm run build
 
 ### Extensibility
 - [x] Custom prompt templates — User-defined analysis prompts
-- [ ] Multi-model consensus — Run multiple LLMs and synthesize a unified analysis
+- [x] Multi-model consensus — Run multiple LLMs and synthesize a unified analysis
 - [x] Local LLM support — Run analysis with Ollama for security-sensitive codebases
 - [ ] Plugin system — Custom collectors and analysis rules per team
-- [ ] Monorepo support — Per-package analysis and dependency mapping within monorepos
+- [x] Monorepo support — Per-package analysis and dependency mapping within monorepos
 
 ## Contributing
 

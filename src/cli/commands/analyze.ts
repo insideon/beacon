@@ -8,6 +8,8 @@ import { execSync } from "child_process";
 import { createSpinner } from "../spinner.js";
 import { handleCliError } from "../errors.js";
 import { buildSnapshot, recordSnapshot, getCurrentBranch } from "../../history/store.js";
+import { consensusAnalysis } from "../../analyzer/consensus.js";
+import type { LLMProvider } from "../../analyzer/types.js";
 
 function getHeadCommit(): string | null {
   try {
@@ -22,6 +24,7 @@ export async function analyzeCommand(options: {
   withTodo?: boolean;
   verbose?: boolean;
   noCache?: boolean;
+  consensus?: boolean;
 }): Promise<void> {
   const projectPath = process.cwd();
   const verbose = options.verbose ?? false;
@@ -69,15 +72,43 @@ export async function analyzeCommand(options: {
       log("Cache miss.");
     }
 
-    const modelLabel = config.llm.model ?? "default";
-    log(`Using provider: ${config.llm.provider} (${modelLabel})`);
-
-    const provider = createProvider(config.llm.provider, apiKey, config.llm.model);
-
-    spinner?.start("Analyzing with AI...");
-    log("Calling LLM API...");
+    const useConsensus = options.consensus && config.consensus?.providers?.length;
     const llmStart = Date.now();
-    const result = await provider.analyze(context, "analyze");
+    let result;
+
+    if (useConsensus) {
+      // Multi-model consensus
+      const providers: LLMProvider[] = [];
+      for (const p of config.consensus!.providers) {
+        const key = await resolveApiKey(p.provider, undefined);
+        if (key) {
+          providers.push(createProvider(p.provider, key, p.model));
+        } else {
+          log(`Skipping ${p.provider}: no API key`);
+        }
+      }
+
+      if (providers.length === 0) {
+        console.error("No providers available for consensus. Check API keys.");
+        process.exit(1);
+      }
+
+      spinner?.start(`Running consensus analysis (${providers.length} models)...`);
+      log(`Consensus with ${providers.length} providers`);
+      const consensus = await consensusAnalysis(providers, context, "analyze");
+      result = consensus.result;
+      for (const pr of consensus.providerResults) {
+        log(`  ${pr.provider}: ${pr.result.recommendations.length} recommendations`);
+      }
+    } else {
+      const modelLabel = config.llm.model ?? "default";
+      log(`Using provider: ${config.llm.provider} (${modelLabel})`);
+      const provider = createProvider(config.llm.provider, apiKey, config.llm.model);
+      spinner?.start("Analyzing with AI...");
+      log("Calling LLM API...");
+      result = await provider.analyze(context, "analyze");
+    }
+
     const llmElapsed = ((Date.now() - llmStart) / 1000).toFixed(1);
     spinner?.succeed(`Analysis complete (${llmElapsed}s)`);
     log(`LLM response received (${llmElapsed}s)`);

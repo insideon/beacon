@@ -20,6 +20,8 @@ import { sprintCommand } from "./commands/sprint.js";
 import { webhookCommand } from "./commands/webhook.js";
 import { reportCommand } from "./commands/report.js";
 import { onboardCommand } from "./commands/onboard.js";
+import { monorepoCommand } from "./commands/monorepo.js";
+import { issuesCommand } from "./commands/issues.js";
 
 const program = new Command();
 
@@ -55,8 +57,9 @@ program
 program
   .command("analyze")
   .description("Run full project analysis with AI recommendations")
-  .action(() => {
-    return analyzeCommand(globalOpts());
+  .option("--consensus", "Use multiple LLMs and merge results")
+  .action((options) => {
+    return analyzeCommand({ ...globalOpts(), consensus: options.consensus });
   });
 
 program
@@ -142,6 +145,22 @@ program
   .description("Generate a getting-started guide for new developers")
   .action(() => {
     return onboardCommand(globalOpts());
+  });
+
+program
+  .command("monorepo")
+  .description("Analyze all packages in a monorepo")
+  .action(() => {
+    return monorepoCommand(globalOpts());
+  });
+
+program
+  .command("issues")
+  .description("Create GitHub Issues from analysis recommendations")
+  .option("--dry-run", "Preview issues without creating them")
+  .option("--min-priority <level>", "Minimum priority to create issues for", "high")
+  .action((options) => {
+    return issuesCommand({ ...globalOpts(), dryRun: options.dryRun, minPriority: options.minPriority });
   });
 
 program
