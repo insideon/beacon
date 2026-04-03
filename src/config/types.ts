@@ -10,7 +10,15 @@ export interface AnalyzeConfig {
   maxDepth: number;
 }
 
+export interface GateConfig {
+  minScore?: number;
+  maxCritical?: number;
+  maxHigh?: number;
+  maxVulnerabilities?: number;
+}
+
 export interface BeaconConfig {
   llm: LLMConfig;
   analyze: AnalyzeConfig;
+  gate?: GateConfig;
 }

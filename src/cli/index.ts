@@ -12,6 +12,10 @@ import { todoCommand } from "./commands/todo.js";
 import { statusCommand } from "./commands/status.js";
 import { initCommand } from "./commands/init.js";
 import { loginCommand } from "./commands/login.js";
+import { trendCommand } from "./commands/trend.js";
+import { gateCommand } from "./commands/gate.js";
+import { diffCommand } from "./commands/diff.js";
+import { scheduleCommand } from "./commands/schedule.js";
 
 const program = new Command();
 
@@ -75,5 +79,39 @@ program
   .command("login")
   .description("Set up your LLM provider and API key")
   .action(loginCommand);
+
+program
+  .command("trend")
+  .description("Show project health trends over time")
+  .option("--limit <n>", "Number of snapshots to show", "10")
+  .option("--metric <name>", "Metric to chart: score, todos, deps, issues", "score")
+  .action((options) => {
+    return trendCommand({
+      json: program.opts().json ?? false,
+      limit: parseInt(options.limit, 10),
+      metric: options.metric,
+    });
+  });
+
+program
+  .command("gate")
+  .description("Check project health against configured thresholds (for CI)")
+  .action(() => {
+    return gateCommand(globalOpts());
+  });
+
+program
+  .command("diff [base]")
+  .description("Compare current branch health against a base branch")
+  .action((base) => {
+    return diffCommand({ json: program.opts().json ?? false, base });
+  });
+
+program
+  .command("schedule <action> [time]")
+  .description("Manage daily reminders (set HH:MM | off | status)")
+  .action((action, time) => {
+    return scheduleCommand(action, time);
+  });
 
 program.parse();

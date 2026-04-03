@@ -7,6 +7,7 @@ import { getCache, setCache } from "../../cache/index.js";
 import { execSync } from "child_process";
 import { createSpinner } from "../spinner.js";
 import { handleCliError } from "../errors.js";
+import { buildSnapshot, recordSnapshot, getCurrentBranch } from "../../history/store.js";
 
 function getHeadCommit(): string | null {
   try {
@@ -81,10 +82,18 @@ export async function analyzeCommand(options: {
     spinner?.succeed(`Analysis complete (${llmElapsed}s)`);
     log(`LLM response received (${llmElapsed}s)`);
 
-    // Save to cache
+    // Save to cache and record history snapshot
     if (commitHash) {
       await setCache(commitHash, "analyze", result);
       log("Result cached.");
+
+      const snapshot = buildSnapshot(context, result, commitHash, getCurrentBranch());
+      const recorded = await recordSnapshot(snapshot);
+      if (recorded) {
+        log(`Health snapshot recorded (score: ${snapshot.metrics.healthScore})`);
+      } else {
+        log("Snapshot skipped (same commit already recorded).");
+      }
     }
 
     if (isJson) {

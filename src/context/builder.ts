@@ -147,8 +147,14 @@ export class ContextBuilder {
       },
       health: {
         todos: codeData?.todos ?? [],
-        outdatedDeps: [],
+        outdatedDeps: (configData?.outdatedPackages ?? []).map((p) => ({
+          name: p.name,
+          currentVersion: p.current,
+          latestVersion: p.latest,
+          isOutdated: p.current !== p.latest,
+        })),
         testCoverage: undefined,
+        vulnerabilities: configData?.vulnerabilities,
       },
       docs: {
         hasReadme: docsData?.readme?.exists ?? false,

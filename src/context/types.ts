@@ -40,6 +40,13 @@ export interface ProjectContext {
     todos: TodoItem[];
     outdatedDeps: Dependency[];
     testCoverage?: number;
+    vulnerabilities?: {
+      total: number;
+      critical: number;
+      high: number;
+      moderate: number;
+      low: number;
+    };
   };
   docs: {
     hasReadme: boolean;

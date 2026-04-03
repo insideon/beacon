@@ -1,6 +1,22 @@
 import { readFile } from "fs/promises";
 import { join } from "path";
+import { execSync } from "child_process";
 import type { Collector, CollectorResult } from "./types.js";
+
+export interface VulnerabilityInfo {
+  total: number;
+  critical: number;
+  high: number;
+  moderate: number;
+  low: number;
+}
+
+export interface OutdatedPackage {
+  name: string;
+  current: string;
+  wanted: string;
+  latest: string;
+}
 
 export interface ConfigData {
   packageJson?: {
@@ -14,6 +30,8 @@ export interface ConfigData {
   hasTypescript: boolean;
   hasEslint: boolean;
   hasPrettier: boolean;
+  vulnerabilities?: VulnerabilityInfo;
+  outdatedPackages?: OutdatedPackage[];
 }
 
 async function tryReadJson<T>(filePath: string): Promise<T | null> {
@@ -136,6 +154,75 @@ export class ConfigCollector implements Collector<ConfigData> {
       hasPrettierConfig ||
       !!(pkgJson as Record<string, unknown> | null)?.["prettier"];
 
+    // npm audit (vulnerabilities)
+    let vulnerabilities: VulnerabilityInfo | undefined;
+    if (pkgJson) {
+      try {
+        const auditOut = execSync("npm audit --json 2>/dev/null", {
+          encoding: "utf-8",
+          cwd: projectPath,
+          timeout: 15000,
+        });
+        const audit = JSON.parse(auditOut);
+        const vuln = audit.metadata?.vulnerabilities;
+        if (vuln) {
+          vulnerabilities = {
+            total: (vuln.critical ?? 0) + (vuln.high ?? 0) + (vuln.moderate ?? 0) + (vuln.low ?? 0),
+            critical: vuln.critical ?? 0,
+            high: vuln.high ?? 0,
+            moderate: vuln.moderate ?? 0,
+            low: vuln.low ?? 0,
+          };
+        }
+      } catch {
+        // npm audit may fail or not be available — skip
+      }
+    }
+
+    // npm outdated
+    let outdatedPackages: OutdatedPackage[] | undefined;
+    if (pkgJson) {
+      try {
+        const outdatedOut = execSync("npm outdated --json 2>/dev/null", {
+          encoding: "utf-8",
+          cwd: projectPath,
+          timeout: 15000,
+        });
+        const outdated = JSON.parse(outdatedOut);
+        outdatedPackages = Object.entries(outdated).map(
+          ([name, info]: [string, any]) => ({
+            name,
+            current: info.current ?? "unknown",
+            wanted: info.wanted ?? "unknown",
+            latest: info.latest ?? "unknown",
+          })
+        );
+      } catch {
+        // npm outdated exits with code 1 when packages are outdated
+        // Try to parse stdout anyway
+        try {
+          const outdatedOut = execSync("npm outdated --json 2>/dev/null || true", {
+            encoding: "utf-8",
+            cwd: projectPath,
+            timeout: 15000,
+          });
+          if (outdatedOut.trim()) {
+            const outdated = JSON.parse(outdatedOut);
+            outdatedPackages = Object.entries(outdated).map(
+              ([name, info]: [string, any]) => ({
+                name,
+                current: info.current ?? "unknown",
+                wanted: info.wanted ?? "unknown",
+                latest: info.latest ?? "unknown",
+              })
+            );
+          }
+        } catch {
+          // skip
+        }
+      }
+    }
+
     return {
       source: "config",
       data: {
@@ -143,6 +230,8 @@ export class ConfigCollector implements Collector<ConfigData> {
         hasTypescript,
         hasEslint,
         hasPrettier,
+        vulnerabilities,
+        outdatedPackages,
       },
       metadata: {
         collectedAt: new Date(),
