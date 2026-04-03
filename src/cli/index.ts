@@ -16,6 +16,9 @@ import { trendCommand } from "./commands/trend.js";
 import { gateCommand } from "./commands/gate.js";
 import { diffCommand } from "./commands/diff.js";
 import { scheduleCommand } from "./commands/schedule.js";
+import { sprintCommand } from "./commands/sprint.js";
+import { webhookCommand } from "./commands/webhook.js";
+import { reportCommand } from "./commands/report.js";
 
 const program = new Command();
 
@@ -112,6 +115,32 @@ program
   .description("Manage daily reminders (set HH:MM | off | status)")
   .action((action, time) => {
     return scheduleCommand(action, time);
+  });
+
+program
+  .command("sprint")
+  .description("Generate a sprint/standup report from git activity")
+  .option("--days <n>", "Number of days to include", "7")
+  .action((options) => {
+    return sprintCommand({
+      json: program.opts().json ?? false,
+      days: parseInt(options.days, 10),
+    });
+  });
+
+program
+  .command("webhook <url>")
+  .description("Send analysis results to a Slack or Discord webhook")
+  .option("--platform <name>", "Force platform: slack or discord")
+  .action((url, options) => {
+    return webhookCommand({ ...globalOpts(), url, platform: options.platform });
+  });
+
+program
+  .command("report")
+  .description("Generate a stakeholder-friendly project health report")
+  .action(() => {
+    return reportCommand(globalOpts());
   });
 
 program.parse();
