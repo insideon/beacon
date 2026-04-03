@@ -25,6 +25,7 @@ import { issuesCommand } from "./commands/issues.js";
 import { multiRepoCommand } from "./commands/multi-repo.js";
 import { dashboardCommand } from "./commands/dashboard.js";
 import { autopilotCommand } from "./commands/autopilot.js";
+import { languageCommand } from "./commands/language.js";
 
 const program = new Command();
 
@@ -84,6 +85,11 @@ program
   .command("init")
   .description("Create a .beaconrc.json config file with defaults")
   .action(initCommand);
+
+program
+  .command("language")
+  .description("Set the output language for analysis results")
+  .action(languageCommand);
 
 program
   .command("login")

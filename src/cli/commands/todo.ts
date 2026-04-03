@@ -82,7 +82,7 @@ export async function todoCommand(options: {
     spinner?.start("Analyzing with AI...");
     log("Calling LLM API...");
     const llmStart = Date.now();
-    const result = await provider.analyze(context, "todo");
+    const result = await provider.analyze(context, "todo", config.language);
     const llmElapsed = ((Date.now() - llmStart) / 1000).toFixed(1);
     spinner?.succeed(`Analysis complete (${llmElapsed}s)`);
     log(`LLM response received (${llmElapsed}s)`);

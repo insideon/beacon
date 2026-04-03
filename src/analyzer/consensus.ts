@@ -8,13 +8,14 @@ import type { ProjectContext } from "../context/types.js";
 export async function consensusAnalysis(
   providers: LLMProvider[],
   context: ProjectContext,
-  promptType: string
+  promptType: string,
+  language?: string
 ): Promise<{ result: AnalysisResult; providerResults: { provider: string; result: AnalysisResult }[] }> {
   // Run all providers in parallel
   const settled = await Promise.allSettled(
     providers.map(async (p) => ({
       provider: p.name,
-      result: await p.analyze(context, promptType),
+      result: await p.analyze(context, promptType, language),
     }))
   );
 

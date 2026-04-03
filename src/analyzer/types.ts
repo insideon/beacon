@@ -18,5 +18,5 @@ export interface AnalysisResult {
 
 export interface LLMProvider {
   name: string;
-  analyze(context: ProjectContext, prompt: string): Promise<AnalysisResult>;
+  analyze(context: ProjectContext, prompt: string, language?: string): Promise<AnalysisResult>;
 }

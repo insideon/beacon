@@ -95,7 +95,7 @@ export async function analyzeCommand(options: {
 
       spinner?.start(`Running consensus analysis (${providers.length} models)...`);
       log(`Consensus with ${providers.length} providers`);
-      const consensus = await consensusAnalysis(providers, context, "analyze");
+      const consensus = await consensusAnalysis(providers, context, "analyze", config.language);
       result = consensus.result;
       for (const pr of consensus.providerResults) {
         log(`  ${pr.provider}: ${pr.result.recommendations.length} recommendations`);
@@ -106,7 +106,7 @@ export async function analyzeCommand(options: {
       const provider = createProvider(config.llm.provider, apiKey, config.llm.model);
       spinner?.start("Analyzing with AI...");
       log("Calling LLM API...");
-      result = await provider.analyze(context, "analyze");
+      result = await provider.analyze(context, "analyze", config.language);
     }
 
     const llmElapsed = ((Date.now() - llmStart) / 1000).toFixed(1);

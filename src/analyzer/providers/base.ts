@@ -125,9 +125,14 @@ export abstract class BaseProvider implements LLMProvider {
 
   protected abstract callApi(prompt: string): Promise<string>;
 
-  async analyze(context: ProjectContext, promptType: string): Promise<AnalysisResult> {
+  async analyze(context: ProjectContext, promptType: string, language?: string): Promise<AnalysisResult> {
     const template = this.loadTemplate(promptType);
-    const prompt = renderPrompt(template, context);
+    let prompt = renderPrompt(template, context);
+
+    if (language && language !== "en") {
+      prompt += `\n\nIMPORTANT: Write ALL text content (summary, title, description, reasoning) in ${language}. Keep JSON keys, priority values, category values, and effort values in English.`;
+    }
+
     const raw = await this.callApi(prompt);
     return parseAnalysisResult(raw);
   }
