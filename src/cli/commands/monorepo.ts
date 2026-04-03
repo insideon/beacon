@@ -125,7 +125,7 @@ export async function monorepoCommand(options: {
 
       const builder = new ContextBuilder(config);
       const context = await builder.build(pkg.path, verbose);
-      const result = await provider.analyze(context, "analyze");
+      const result = await provider.analyze(context, "analyze", config.language);
 
       const snapshot = buildSnapshot(context, result, getHeadCommit() ?? "unknown", getCurrentBranch());
       results.push({ pkg, result, score: snapshot.metrics.healthScore });

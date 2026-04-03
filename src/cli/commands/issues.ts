@@ -104,7 +104,7 @@ export async function issuesCommand(options: {
     const provider = createProvider(config.llm.provider, apiKey, config.llm.model);
 
     spinner?.start("Analyzing...");
-    const result = await provider.analyze(context, "analyze");
+    const result = await provider.analyze(context, "analyze", config.language);
     spinner?.succeed("Analysis complete");
 
     // Filter by minimum priority

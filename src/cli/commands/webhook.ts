@@ -138,7 +138,7 @@ export async function webhookCommand(options: {
     const provider = createProvider(config.llm.provider, apiKey, config.llm.model);
 
     spinner?.start("Analyzing with AI...");
-    const result = await provider.analyze(context, "analyze");
+    const result = await provider.analyze(context, "analyze", config.language);
     spinner?.succeed("Analysis complete");
 
     // Record snapshot

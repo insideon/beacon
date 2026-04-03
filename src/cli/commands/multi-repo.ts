@@ -92,7 +92,7 @@ export async function multiRepoCommand(options: {
         const builder = new ContextBuilder(config);
         const context = await builder.build(repoPath, verbose);
         const provider = createProvider(config.llm.provider, apiKey, config.llm.model);
-        const analysis = await provider.analyze(context, "analyze");
+        const analysis = await provider.analyze(context, "analyze", config.language);
 
         const commitHash = getHeadCommitAt(repoPath) ?? "unknown";
         const branch = getBranchAt(repoPath);

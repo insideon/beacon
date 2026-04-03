@@ -67,7 +67,7 @@ export async function autopilotCommand(options: {
     const builder = new ContextBuilder(config);
     const context = await builder.build(projectPath, verbose);
     const provider = createProvider(config.llm.provider, apiKey, config.llm.model);
-    const result = await provider.analyze(context, "analyze");
+    const result = await provider.analyze(context, "analyze", config.language);
     spinner?.succeed("Analysis complete");
 
     // Filter by priority

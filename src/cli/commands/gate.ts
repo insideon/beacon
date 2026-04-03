@@ -103,7 +103,7 @@ export async function gateCommand(options: {
 
     spinner?.start("Running analysis for quality gate...");
     const llmStart = Date.now();
-    const result = await provider.analyze(context, "analyze");
+    const result = await provider.analyze(context, "analyze", config.language);
     const llmElapsed = ((Date.now() - llmStart) / 1000).toFixed(1);
     spinner?.succeed(`Analysis complete (${llmElapsed}s)`);
 

@@ -110,7 +110,7 @@ export async function onboardCommand(options: {
     const provider = createProvider(config.llm.provider, apiKey, config.llm.model);
 
     spinner?.start("Generating onboarding guide...");
-    const result = await provider.analyze(context, "onboard");
+    const result = await provider.analyze(context, "onboard", config.language);
     spinner?.succeed("Onboarding guide ready");
 
     if (isJson) {
