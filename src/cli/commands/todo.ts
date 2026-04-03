@@ -6,6 +6,7 @@ import { renderJson } from "../../output/json.js";
 import { getCache, setCache } from "../../cache/index.js";
 import { execSync } from "child_process";
 import { createSpinner } from "../spinner.js";
+import { handleCliError } from "../errors.js";
 import type { AnalysisResult } from "../../analyzer/types.js";
 
 function getHeadCommit(): string | null {
@@ -102,17 +103,6 @@ export async function todoCommand(options: {
       console.log(renderTerminal(filtered, context));
     }
   } catch (error) {
-    if (error instanceof Error) {
-      const msg = error.message;
-      console.error(`Error: ${msg}`);
-      if (/api|key|auth/i.test(msg)) {
-        console.error("Hint: Run 'beacon login' to set up or refresh your API key.");
-      } else if (/network|ECONNREFUSED|fetch/i.test(msg)) {
-        console.error("Hint: Check your internet connection and try again.");
-      } else if (/parse|JSON|schema/i.test(msg)) {
-        console.error("Hint: The LLM may have returned an unexpected response. Try running again.");
-      }
-    }
-    process.exit(1);
+    handleCliError(error, verbose);
   }
 }

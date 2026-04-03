@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import { loadConfig } from "../../config/loader.js";
 import { ContextBuilder } from "../../context/builder.js";
+import { handleCliError } from "../errors.js";
 import type { ProjectContext } from "../../context/types.js";
 
 function renderStatusTerminal(context: ProjectContext): string {
@@ -125,9 +126,6 @@ export async function statusCommand(options: {
       console.log(renderStatusTerminal(context));
     }
   } catch (error) {
-    if (error instanceof Error) {
-      console.error(`Error: ${error.message}`);
-    }
-    process.exit(1);
+    handleCliError(error);
   }
 }
